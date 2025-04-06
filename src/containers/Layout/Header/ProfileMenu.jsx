@@ -11,7 +11,7 @@ import {
 
 export default function ProfileMenu({ avatar }) {
   let navigate = useNavigate();
-  const { logOut } = useContext(AuthContext);
+  const { logOut,user } = useContext(AuthContext);
   const [state, setState] = useState(false);
   const handleDropdown = () => {
     setState(!state);

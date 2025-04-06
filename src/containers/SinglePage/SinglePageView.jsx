@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useLocation } from 'library/hooks/useLocation';
 import Sticky from 'react-stickynode';
@@ -17,17 +17,30 @@ import SinglePageWrapper, { PostImage } from './SinglePageView.style';
 import PostImageGallery from './ImageGallery/ImageGallery';
 import useDataApi from 'library/hooks/useDataApi';
 import isEmpty from 'lodash/isEmpty';
+import axios from 'axios';
+import { api } from '../../api';
 
 const SinglePage = () => {
-  let { slug } = useParams();
+  let { id } = useParams();
   const { href } = useLocation();
   const [isModalShowing, setIsModalShowing] = useState(false);
   const { width } = useWindowSize();
 
   let url = '/data/hotel-single.json';
-  if (!slug) {
+  if (!id) {
     url += slug;
   }
+
+  const [property,setProperty] = useState({})
+  const getProperty = async() => {
+    const res = await axios.get(`${api}Property/${id}`)
+    console.log(res.data)
+    setProperty(res.data)
+  }
+  useEffect(()=>{
+    getProperty()
+  },[])
+
   const { data, loading } = useDataApi(url);
   if (isEmpty(data) || loading) return <Loader />;
   const {
@@ -95,7 +108,7 @@ const SinglePage = () => {
           <Col xl={16}>
             <Description
               content={content}
-              title={title}
+              title={property?.propertyName}
               location={location}
               rating={rating}
               ratingCount={ratingCount}

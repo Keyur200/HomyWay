@@ -41,7 +41,7 @@ const LogoIcon = () => (
 export default function Header() {
   let location = useLocation();
   const [{ searchVisibility }] = useContext(LayoutContext);
-  const { loggedIn } = useContext(AuthContext);
+  const { loggedIn,user } = useContext(AuthContext);
   const { width } = useWindowSize();
   const [state, setState] = useState(false);
   const sidebarHandler = () => {
@@ -120,7 +120,7 @@ export default function Header() {
                     <Logo src={avatarImg} />
                   </AvatarImage>
                   <AvatarInfo>
-                    <Text as="h3" content="Nova Scotia" />
+                    <Text as="h3" content={user?.name} />
                     <TextLink
                       link={AGENT_PROFILE_PAGE}
                       content="View Profile"

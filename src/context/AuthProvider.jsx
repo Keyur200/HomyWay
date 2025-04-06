@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { api } from '../api';
 
 export const AuthContext = React.createContext();
 
 const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); 
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -19,10 +20,10 @@ const AuthProvider = ({ children }) => {
 
   const fetchUserData = async () => {
     try {
-      const res = await axios.get('http://localhost:5093/api/Protected', {
+      const res = await axios.get(`${api}Protected`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
-      setUser(res.data);
+      setUser(res.data.user);
     } catch (error) {
       console.error('Error fetching user data', error);
       logOut();
@@ -31,7 +32,7 @@ const AuthProvider = ({ children }) => {
 
   const signIn = async ({ email, password }) => {
     try {
-      const res = await axios.post('http://localhost:5093/api/Auth/login', { email, password });
+      const res = await axios.post(`${api}Auth/login`, { email, password });
       if (res.data.token) {
         localStorage.setItem('token', res.data.token);
         setLoggedIn(true);
@@ -43,9 +44,9 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const signUp = async ({name,email,password,phone}) => {
+  const signUp = async ({name,email,password,phone,gid}) => {
     try {
-      const res = await axios.post('http://localhost:5093/api/Auth/register', {name,email,password,phone});
+      const res = await axios.post(`${api}Auth/register`, {name,email,password,phone,gid});
       if (res.data.token) {
         navigate('/sign-in', { replace: true });
       }

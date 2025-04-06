@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Heading from 'components/UI/Heading/Heading';
 import TextLink from 'components/UI/TextLink/TextLink';
 import Container from 'components/UI/Container/Container';
@@ -15,7 +15,6 @@ import {
 const LuxaryHotelsGrid = () => {
   const { data, loading } = useDataApi('/data/hotel.json');
   const { width } = useWindowSize();
-
   let posts = data;
   let limit;
 
@@ -42,7 +41,6 @@ const LuxaryHotelsGrid = () => {
         title={<Heading content="Best Rated: Luxary hotels" />}
         link={<TextLink link={LISTING_POSTS_PAGE} content="Show all" />}
       />
-
       <SectionGrid
         link={SINGLE_POST_PAGE}
         columnWidth={[1 / 1, 1 / 2, 1 / 3, 1 / 4, 1 / 5]}

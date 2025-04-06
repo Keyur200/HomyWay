@@ -20,6 +20,7 @@ import {
   AGENT_PASSWORD_CHANGE_PAGE,
   AGENT_ACCOUNT_SETTINGS_PAGE,
 } from './settings/constant';
+import DemoListing from './containers/AddListing/DemoListing';
 
 // protected route
 function RequireAuth({ children }) {
@@ -95,14 +96,14 @@ export default function AppRoutes() {
             </React.Suspense>
           }
         />
-        <Route
+        {/* <Route
           path={`${SINGLE_POST_PAGE}/:slug`}
           element={
             <React.Suspense fallback={<Loader />}>
               <SinglePageView />
             </React.Suspense>
           }
-        />
+        /> */}
         {/* Nested routes for agent page */}
         <Route
           path={AGENT_PROFILE_PAGE}
@@ -186,6 +187,27 @@ export default function AppRoutes() {
               <RequireAuth>
                 <AddListingPage />
               </RequireAuth>
+            </React.Suspense>
+          }
+        />
+        <Route
+          path={"add"}
+          element={
+            <React.Suspense fallback={<Loader />}>
+              {/* <RequireAuth> */}
+              <DemoListing />
+              {/* </RequireAuth> */}
+            </React.Suspense>
+          }
+        />
+
+        <Route
+          path={"PropertyDetails/:id"}
+          element={
+            <React.Suspense fallback={<Loader />}>
+              {/* <RequireAuth> */}
+              <SinglePageView/>
+              {/* </RequireAuth> */}
             </React.Suspense>
           }
         />

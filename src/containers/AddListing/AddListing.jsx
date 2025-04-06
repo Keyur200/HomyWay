@@ -6,11 +6,24 @@ import HotelPhotos from './HotelPhotos';
 import HotelLocation from './HotelLocation';
 import HotelAmenities from './HotelAmenities';
 import Stepper from './AddListing.style';
+import Submit from './Submit';
 
 createStore({
   data: {
-    guest: 0,
+    hostId: "",
+    propertyName: "",
+    propertyDescription: "",
+    propertyAdderss: "",
+    propertyCity: "",
+    propertyState: "",
+    propertyCountry: "",
+    maxGuests: 0,
     bed: 0,
+    bedRoom: 0,
+    bathroom: 0,
+    status: "",
+    propertyPrice: 0,
+    categoryId: "",
   },
 });
 
@@ -27,12 +40,12 @@ const AddListing = () => {
       break;
 
     case 3:
-      stepComponent = <HotelLocation setStep={setStep} />;
+      stepComponent = <Submit setStep={setStep} />;
       break;
 
-    case 4:
-      stepComponent = <HotelAmenities setStep={setStep} />;
-      break;
+    // case 4:
+    //   stepComponent = <HotelAmenities setStep={setStep} />;
+    //   break;
 
     default:
       stepComponent = null;
