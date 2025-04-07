@@ -36,7 +36,7 @@ const DemoListing = () => {
     formData.append("bathroom", bathroom);
     formData.append("status", "Pending");
     formData.append("propertyPrice", price);
-    formData.append("categoryId", 1);
+    formData.append("categoryId", 2);
     files.forEach((file) => formData.append("files", file));
 
     const handleUpload = async () => {
