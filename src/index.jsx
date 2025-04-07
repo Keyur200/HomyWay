@@ -8,6 +8,7 @@ import AuthProvider from 'context/AuthProvider';
 import AppRoutes from './router';
 import { ConfigProvider } from 'antd';
 import 'antd/dist/reset.css';
+import { ToastContainer } from 'react-toastify';
 
 const App = () => (
   <ThemeProvider theme={theme}>
@@ -21,6 +22,7 @@ const App = () => (
         </BrowserRouter>
       </React.Fragment>
     </ConfigProvider>
+    <ToastContainer/>
   </ThemeProvider>
 );
 const root = createRoot(document.getElementById('root'));

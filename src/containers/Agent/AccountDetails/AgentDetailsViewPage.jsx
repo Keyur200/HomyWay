@@ -1,4 +1,4 @@
-import React, { useContext, Fragment } from 'react';
+import React, { useContext, Fragment, useEffect, useState } from 'react';
 import { Outlet, NavLink, Link } from 'react-router-dom';
 import isEmpty from 'lodash/isEmpty';
 import {
@@ -31,10 +31,26 @@ import AgentDetailsPage, {
   SocialAccount,
   NavigationArea,
 } from './AgentDetails.style';
+import axios from 'axios';
+import { api } from '../../../api';
 
 const ProfileNavigation = (props) => {
   const { path, className } = props;
-  const { loggedIn } = useContext(AuthContext);
+  const { loggedIn,user } = useContext(AuthContext);
+
+  const [property, setProperty] = useState([]);
+  
+    const allProperties = async () => {
+      const res = await axios.get(`${api}Property/Host/${user?.id}`);
+      if (res) {
+        setProperty(res.data);
+        console.log(res.data);
+      }
+    };
+  
+    useEffect(() => {
+      allProperties();
+    }, []);
 
   const navigations = [
     { label: <NavLink to={path}>Listing</NavLink>, key: 'listing' },
