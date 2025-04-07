@@ -128,8 +128,8 @@ const SinglePage = () => {
               </Sticky>
             ) : (
               <BottomReservation
-                title={title}
-                price={price}
+                title={property?.propertyName}
+                price={property?.propertyPrice}
                 rating={rating}
                 ratingCount={ratingCount}
               />

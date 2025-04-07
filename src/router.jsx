@@ -21,6 +21,7 @@ import {
   AGENT_ACCOUNT_SETTINGS_PAGE,
 } from './settings/constant';
 import DemoListing from './containers/AddListing/DemoListing';
+import Listing from './components/Listing/Listing';
 
 // protected route
 function RequireAuth({ children }) {
@@ -92,7 +93,7 @@ export default function AppRoutes() {
           path={LISTING_POSTS_PAGE}
           element={
             <React.Suspense fallback={<Loader />}>
-              <ListingPage />
+              <Listing />
             </React.Suspense>
           }
         />
