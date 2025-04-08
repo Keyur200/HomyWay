@@ -8,6 +8,7 @@ import 'react-multi-carousel/lib/styles.css';
 import GridCard from '../GridCard/GridCard';
 import axios from 'axios';
 import { api } from '../../api'
+import { Link } from 'react-router-dom';
 
 const responsive = {
   desktop: {
@@ -63,68 +64,47 @@ const PostGrid = ({
   }, [])
 
   return (
-    <div>
-      {
-        property.map((p, i) => (
-          <GridCard
-            isCarousel={true}
-            favorite={
-              <Favourite
-                onClick={(event) => {
-                  console.log(event);
-                }}
-              />
-            }
-
-            location={location.formattedAddress}
-            title={<TextLink link={`PropertyDetails/${p?.propertyId}`} content={p?.propertyName} />}
-            price={`₹${p?.propertyPrice}/Night - Free Cancellation`}
-            rating={<Rating rating={rating} ratingCount={ratingCount} type="bulk" />}
-            viewDetailsBtn={
-              <TextLink
-                link={`PropertyDetails/${p?.propertyId}`}
-                icon={<FiExternalLink />}
-                content="View Details"
-              />
-            }
-          >
-            <Carousel
-              additionalTransfrom={0}
-              arrows
-              autoPlaySpeed={3000}
-              containerClass="container"
-              dotListClass=""
-              draggable
-              focusOnSelect={false}
-              infinite
-              itemClass=""
-              renderDotsOutside={false}
-              responsive={responsive}
-              showDots={true}
-              sliderClass=""
-              slidesToSlide={1}
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 p-6">
+          {property.map((p, i) => (
+            <Link to={`/PropertyDetails/${p?.propertyId}`}
+              key={i}
+              className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
             >
-              {gallery.map(({ url, title }, index) => (
+              <div className="relative">
                 <img
-                  src={url}
-                  alt={title}
-                  key={index}
-                  draggable={false}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    position: 'relative',
-                  }}
+                  src={
+                    p.imagesNavigation[0]?.imageUrl ||
+                    "https://via.placeholder.com/300x200?text=No+Image"
+                  }
+                  alt={p.propertyName || "Property Image"}
+                  className="w-full h-48 object-cover"
                 />
-              ))}
-            </Carousel>
-          </GridCard>
-        ))
-      }
-
-
-    </div>
+                <button className="absolute top-2 right-2 text-gray-400 hover:text-red-500">
+                  <i className="fas fa-heart"></i>
+                </button>
+              </div>
+    
+              <div className="p-4">
+                <Link to={`/PropertyDetails/${p?.propertyId}`}>
+                <h3 className="text-lg font-semibold text-gray-800 truncate">
+                  {p.propertyName || "Untitled Property"}
+                </h3>
+                </Link>
+                <p className="text-sm text-gray-500 mb-2">{p.location || "Unknown Location"}</p>
+                <p className="text-gray-700 font-medium">
+                  ₹{p.propertyPrice || 0}/Night <span className="text-sm text-gray-400">- Free Cancellation</span>
+                </p>
+    
+                <div className="flex items-center mt-2">
+                  {[...Array(5)].map((_, idx) => (
+                    <i key={idx} className="fas fa-star text-yellow-400 text-sm mr-1" />
+                  ))}
+                  <span className="text-sm text-gray-500 ml-1">(8)</span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
   );
 };
 

@@ -34,7 +34,7 @@ const TopHotelsGrid = () => {
 
   return (
     <Container fluid={true}>
-      <SectionTitle
+      {/* <SectionTitle
         title={<Heading content="Travelers’ Choice: Top hotels" />}
         link={<TextLink link={LISTING_POSTS_PAGE} content="Show all" />}
       />
@@ -46,7 +46,7 @@ const TopHotelsGrid = () => {
         loading={loading}
         limit={limit}
         placeholder={<PostPlaceholder />}
-      />
+      /> */}
     </Container>
   );
 };

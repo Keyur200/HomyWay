@@ -69,7 +69,7 @@ const ProfileNavigation = (props) => {
       <Container fluid={true}>
         <Menu className={className} items={navigations} />
         {loggedIn && (
-          <Link className="add_card" to={ADD_HOTEL_PAGE}>
+          <Link className="add_card" to={'/add'}>
             <IoIosAdd /> Add Hotel
           </Link>
         )}

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../context/AuthProvider';
 import axios from 'axios';
 import { api } from '../../api';
@@ -20,10 +20,23 @@ const DemoListing = () => {
     const [bathroom, setBathroom] = useState("");
     const [price, setPrice] = useState("");
     const [files, setFiles] = useState([]);
+    const [category, setCategory] = useState([]);
+    const [cid,setcid] = useState(0)
 
     const handleFileChange = (event) => {
         setFiles([...event.target.files]);
     };
+
+    const getCategories = async () => {
+        const res = await axios.get(`${api}PropertyCategoryTbls`)
+        if(res){
+            setCategory(res.data)
+        }
+    }
+
+    useEffect(()=>{
+        getCategories()
+    },[])
 
     const handleUpload = async () => {
         const formData = new FormData();
@@ -40,7 +53,7 @@ const DemoListing = () => {
         formData.append("bathroom", bathroom);
         formData.append("status", "Pending");
         formData.append("propertyPrice", price);
-        formData.append("categoryId", 2);
+        formData.append("categoryId", cid);
         files.forEach((file) => formData.append("files", file));
 
         try {
@@ -70,6 +83,14 @@ const DemoListing = () => {
                 <input className="input" type="number" placeholder="Bed" onChange={(e) => setBed(e.target.value)} />
                 <input className="input" type="number" placeholder="Bathroom" onChange={(e) => setBathroom(e.target.value)} />
                 <input className="input" type="number" placeholder="Price" onChange={(e) => setPrice(e.target.value)} />
+                <select className='input' value={cid} onChange={(e)=>setcid(e.target.value)}>
+                    <option value="">Select Category</option>
+                    {
+                        category.map((c,i)=>(
+                            <option value={c.categoryId}>{c.categoryName}</option>
+                        ))
+                    }
+                </select>
                 <input className="input" type="file" multiple onChange={handleFileChange} />
             </div>
             <div className="text-center">

@@ -18,14 +18,14 @@ const menuItems = [
     label: <NavLink to={LISTING_POSTS_PAGE}>Listing</NavLink>,
     key: 'menu-2',
   },
-  {
-    label: <NavLink to={AGENT_PROFILE_PAGE}>Agent</NavLink>,
-    key: 'menu-3',
-  },
-  {
-    label: <NavLink to={PRICING_PLAN_PAGE}>Pricing</NavLink>,
-    key: 'menu-4',
-  },
+  // {
+  //   label: <NavLink to={AGENT_PROFILE_PAGE}>Agent</NavLink>,
+  //   key: 'menu-3',
+  // },
+  // {
+  //   label: <NavLink to={PRICING_PLAN_PAGE}>Pricing</NavLink>,
+  //   key: 'menu-4',
+  // },
 ];
 
 const MainMenu = ({ className }) => {

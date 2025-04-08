@@ -37,18 +37,18 @@ const LuxaryHotelsGrid = () => {
 
   return (
     <Container fluid={true}>
-      <SectionTitle
+      {/* <SectionTitle
         title={<Heading content="Best Rated: Luxary hotels" />}
         link={<TextLink link={LISTING_POSTS_PAGE} content="Show all" />}
-      />
-      <SectionGrid
+      /> */}
+      {/* <SectionGrid
         link={SINGLE_POST_PAGE}
         columnWidth={[1 / 1, 1 / 2, 1 / 3, 1 / 4, 1 / 5]}
         data={posts}
         loading={loading}
         limit={limit}
         placeholder={<PostPlaceholder />}
-      />
+      /> */}
     </Container>
   );
 };
