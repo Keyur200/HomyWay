@@ -27,6 +27,8 @@ import MailIcon from "@mui/icons-material/Mail";
 import EventIcon from "@mui/icons-material/Event";
 import { AuthContext } from "../Context/AuthProvider";
 import Host from "./Host";
+import { CategoryOutlined, LogoutOutlined, TourOutlined } from "@mui/icons-material";
+import User from "./User";
 const NAVIGATION = [
   {
     kind: "header",
@@ -44,38 +46,55 @@ const NAVIGATION = [
   {
     segment: "host",
     title: "Hosts",
+    icon: <TourOutlined />,
+  },
+   {
+    segment: "user",
+    title: "Users",
     icon: <PersonIcon />,
   },
   {
     kind: "divider",
   },
   {
-    kind: "header",
-    title: "Analytics",
-  },
-  {
-    segment: "reports",
-    title: "Reports",
-    icon: <BarChartIcon />,
-    children: [
-      {
-        segment: "sales",
-        title: "Sales",
-        icon: <DescriptionIcon />,
-      },
-      {
-        segment: "traffic",
-        title: "Traffic",
-        icon: <DescriptionIcon />,
-      },
-    ],
-  },
-  {
-    segment: "integrations",
-    title: "Integrations",
-    icon: <LayersIcon />,
-  },
+    segment: "logout",
+    title: "Logout",
+    icon: <LogoutOutlined />,
+  }
+  // {
+  //   kind: "divider",
+  // },
+  // {
+  //   kind: "header",
+  //   title: "Analytics",
+  // },
+  // {
+  //   segment: "reports",
+  //   title: "Reports",
+  //   icon: <BarChartIcon />,
+  //   children: [
+  //     {
+  //       segment: "sales",
+  //       title: "Sales",
+  //       icon: <DescriptionIcon />,
+  //     },
+  //     {
+  //       segment: "traffic",
+  //       title: "Traffic",
+  //       icon: <DescriptionIcon />,
+  //     },
+  //   ],
+  // },
+  // {
+  //   segment: "integrations",
+  //   title: "Integrations",
+  //   icon: <LayersIcon />,
+  // },
 ];
+
+
+
+
 
 const demoTheme = createTheme({
   colorSchemes: { light: true, dark: true },
@@ -130,7 +149,9 @@ export default function Dashboard(props) {
   const router = useDemoRouter("/dashboard");
   const demoWindow = window ? window() : undefined;
   const [users, setUsers] = React.useState([]);
+  const [category, setCategory] = React.useState([]);
 
+  // get all user data 
   const getAllUsers = async () => {
     const res = await axios.get(`${api}/Auth`);
     if (res) {
@@ -142,18 +163,35 @@ export default function Dashboard(props) {
     getAllUsers();
   }, []);
 
+
+  // get all category data
+  const getAllCategories = async () => {
+    const res = await axios.get(`${api}/PropertyCategoryTbls`);
+    if (res) {
+      setCategory(res.data);
+    }
+  };
+
+  React.useEffect(() =>{
+    getAllCategories();
+  },[])
+
+  // get only user details 
   const [user2, setUser] = React.useState([]);
 
   React.useEffect(() => {
     setUser(users?.filter((u) => u.gid === 3));
   }, [users]);
 
+  // get only host details 
   const [host, setHost] = React.useState([]);
 
   React.useEffect(() => {
     setHost(users?.filter((u) => u.gid === 2));
   }, [users]);
 
+
+// data for box details like user count || host count || category count
   const stats = [
     {
       label: "Users",
@@ -170,9 +208,9 @@ export default function Dashboard(props) {
       textColor: "#ff6f00",
     },
     {
-      label: "Projects",
-      value: 356,
-      icon: <MailIcon fontSize="large" sx={{ color: "#00b0ff" }} />,
+      label: "Categories",
+      value: category?.length,
+      icon: <CategoryOutlined fontSize="large" sx={{ color: "#00b0ff" }} />,
       bgColor: "#e1f5fe",
       textColor: "#039be5",
     },
@@ -192,6 +230,8 @@ export default function Dashboard(props) {
         return <Category />;
       case "/host":
         return <Host />;
+        case "/user":
+          return <User/>;
       case "/dashboard":
       default:
         return (

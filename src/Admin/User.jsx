@@ -12,12 +12,11 @@ import { Box, Tooltip, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import BlockIcon from "@mui/icons-material/Block";
-
-function Host() {
-  //const { user, checkAdmin } = React.useContext(AuthContext);
+function User() {
   const [users, setUsers] = React.useState([]);
 
   // get all user
+
   const getAllUsers = async () => {
     const res = await axios.get(`${api}/Auth`);
     if (res) {
@@ -29,14 +28,12 @@ function Host() {
     getAllUsers();
   }, []);
 
-  // get host details
-  const [host, setHost] = React.useState([]);
+  // get user details
+  const [user, setUser] = React.useState([]);
 
   React.useEffect(() => {
-    setHost(users?.filter((u) => u.gid === 2));
+    setUser(users?.filter((u) => u.gid === 3));
   }, [users]);
-
-  // update user status
 
   const handleUpdateUserStatus = async (id, status) => {
     const res = await axios.patch(`${api}/Auth/${id}?status=${status}`);
@@ -65,11 +62,31 @@ function Host() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {host.map((row) => (
+              {user.map((row) => (
                 <TableRow key={row?.name}>
                   <TableCell>{row?.name}</TableCell>
                   <TableCell>{row?.email}</TableCell>
                   <TableCell>{row?.phone}</TableCell>
+                  {/* <TableCell align="right">
+                    <Box
+                      sx={{
+                        display: "inline-block",
+                        px: 2,
+                        py: 0.5,
+                        borderRadius: 20,
+                        fontSize: "0.875rem",
+                        fontWeight: 500,
+                        color: "white",
+                        backgroundColor:
+                          row.status === "Active" ? "green" : "red",
+                        textAlign: "center",
+                        minWidth: 80,
+                      }}
+                    >
+                      {row.status === "Active" ? "Active" : "Blocked"}
+                    </Box>
+                  </TableCell> */}
+
                   <TableCell align="center">
                     <Box
                       sx={{
@@ -95,67 +112,41 @@ function Host() {
                   </TableCell>
 
                   <TableCell align="right">
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        gap: 1,
-                      }}
-                    >
-                      {(row.status === "pending" ||
-                        row.status === "active" ||
-                        row.status === "block") && (
-                        <>
-                          {(row.status === "pending" ||
-                            row.status === "block") && (
-                            <Tooltip
-                              title={
-                                row.status === "pending"
-                                  ? "Approve Host"
-                                  : "Activate Host"
-                              }
-                              arrow
-                            >
-                              <Button
-                                variant="outlined"
-                                color="success"
-                                sx={{
-                                  borderRadius: 2,
-                                  minWidth: 40,
-                                  padding: 1,
-                                }}
-                                onClick={() =>
-                                  handleUpdateUserStatus(row.id, "active")
-                                }
-                              >
-                                <CheckCircleIcon />
-                              </Button>
-                            </Tooltip>
-                          )}
+  <Box
+    sx={{
+      display: "flex",
+      justifyContent: "flex-end",
+      gap: 1,
+    }}
+  >
+    {row.status === "block" && (
+      <Tooltip title="Activate User" arrow>
+        <Button
+          variant="outlined"
+          color="success"
+          sx={{ borderRadius: 2, minWidth: 40, padding: 1 }}
+          onClick={() => handleUpdateUserStatus(row.id, "active")}
+        >
+          <CheckCircleIcon />
+        </Button>
+      </Tooltip>
+    )}
 
-                          {(row.status === "pending" ||
-                            row.status === "active") && (
-                            <Tooltip title="Block Host" arrow>
-                              <Button
-                                variant="outlined"
-                                color="error"
-                                sx={{
-                                  borderRadius: 2,
-                                  minWidth: 40,
-                                  padding: 1,
-                                }}
-                                onClick={() =>
-                                  handleUpdateUserStatus(row.id, "block")
-                                }
-                              >
-                                <BlockIcon />
-                              </Button>
-                            </Tooltip>
-                          )}
-                        </>
-                      )}
-                    </Box>
-                  </TableCell>
+    {row.status === "active" && (
+      <Tooltip title="Block User" arrow>
+        <Button
+          variant="outlined"
+          color="error"
+          sx={{ borderRadius: 2, minWidth: 40, padding: 1 }}
+          onClick={() => handleUpdateUserStatus(row.id, "block")}
+        >
+          <BlockIcon />
+        </Button>
+      </Tooltip>
+    )}
+  </Box>
+</TableCell>
+
                 </TableRow>
               ))}
             </TableBody>
@@ -166,4 +157,4 @@ function Host() {
   );
 }
 
-export default Host;
+export default User;
