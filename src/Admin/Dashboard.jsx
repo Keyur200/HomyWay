@@ -1,72 +1,78 @@
-import * as React from 'react';
-import { createTheme, styled } from '@mui/material/styles';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import BarChartIcon from '@mui/icons-material/BarChart';
-import DescriptionIcon from '@mui/icons-material/Description';
-import LayersIcon from '@mui/icons-material/Layers';
-import { AppProvider } from '@toolpad/core/AppProvider';
-import { DashboardLayout } from '@toolpad/core/DashboardLayout';
-import { PageContainer } from '@toolpad/core/PageContainer';
-import Grid from '@mui/material/Grid';
-import Category from './Category';
-import { Navigate, useNavigate } from 'react-router-dom';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import axios from 'axios';
-import { api } from '../api';
-import { Box, Typography } from '@mui/material';
-import PersonIcon from '@mui/icons-material/Person';
-import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
-import MailIcon from '@mui/icons-material/Mail';
-import EventIcon from '@mui/icons-material/Event';
-import { AuthContext } from '../Context/AuthProvider';
+import * as React from "react";
+import { createTheme, styled } from "@mui/material/styles";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import DescriptionIcon from "@mui/icons-material/Description";
+import LayersIcon from "@mui/icons-material/Layers";
+import { AppProvider } from "@toolpad/core/AppProvider";
+import { DashboardLayout } from "@toolpad/core/DashboardLayout";
+import { PageContainer } from "@toolpad/core/PageContainer";
+import Grid from "@mui/material/Grid";
+import Category from "./Category";
+import { Navigate, useNavigate } from "react-router-dom";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import axios from "axios";
+import { api } from "../api";
+import { Box, Typography } from "@mui/material";
+import PersonIcon from "@mui/icons-material/Person";
+import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
+import MailIcon from "@mui/icons-material/Mail";
+import EventIcon from "@mui/icons-material/Event";
+import { AuthContext } from "../Context/AuthProvider";
+import Host from "./Host";
 const NAVIGATION = [
   {
-    kind: 'header',
-    title: 'Main items',
+    kind: "header",
+    title: "Main items",
   },
   {
-    title: 'Dashboard',
+    title: "Dashboard",
     icon: <DashboardIcon />,
   },
   {
-    segment: 'category',
-    title: 'Categories',
+    segment: "category",
+    title: "Categories",
     icon: <ShoppingCartIcon />,
   },
   {
-    kind: 'divider',
+    segment: "host",
+    title: "Hosts",
+    icon: <PersonIcon />,
   },
   {
-    kind: 'header',
-    title: 'Analytics',
+    kind: "divider",
   },
   {
-    segment: 'reports',
-    title: 'Reports',
+    kind: "header",
+    title: "Analytics",
+  },
+  {
+    segment: "reports",
+    title: "Reports",
     icon: <BarChartIcon />,
     children: [
       {
-        segment: 'sales',
-        title: 'Sales',
+        segment: "sales",
+        title: "Sales",
         icon: <DescriptionIcon />,
       },
       {
-        segment: 'traffic',
-        title: 'Traffic',
+        segment: "traffic",
+        title: "Traffic",
         icon: <DescriptionIcon />,
       },
     ],
   },
   {
-    segment: 'integrations',
-    title: 'Integrations',
+    segment: "integrations",
+    title: "Integrations",
     icon: <LayersIcon />,
   },
 ];
@@ -74,7 +80,7 @@ const NAVIGATION = [
 const demoTheme = createTheme({
   colorSchemes: { light: true, dark: true },
   cssVariables: {
-    colorSchemeSelector: 'class',
+    colorSchemeSelector: "class",
   },
   breakpoints: {
     values: {
@@ -101,7 +107,7 @@ function useDemoRouter(initialPath) {
   return router;
 }
 
-const Skeleton = styled('div')(({ theme, height }) => ({
+const Skeleton = styled("div")(({ theme, height }) => ({
   backgroundColor: theme.palette.action.hover,
   borderRadius: theme.shape.borderRadius,
   height,
@@ -113,104 +119,115 @@ function createData(name, calories, fat, carbs, protein) {
 }
 
 const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
+  createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
+  createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
+  createData("Eclair", 262, 16.0, 24, 6.0),
 ];
-
-
 
 export default function Dashboard(props) {
   const { window } = props;
-  const {user,checkAdmin} = React.useContext(AuthContext)
-  const router = useDemoRouter('/dashboard');
+  const { user, checkAdmin } = React.useContext(AuthContext);
+  const router = useDemoRouter("/dashboard");
   const demoWindow = window ? window() : undefined;
-  const [users, setUsers] = React.useState([])
+  const [users, setUsers] = React.useState([]);
 
   const getAllUsers = async () => {
-    const res = await axios.get(`${api}/Auth`)
+    const res = await axios.get(`${api}/Auth`);
     if (res) {
-      setUsers(res.data)
+      setUsers(res.data);
     }
-  }
+  };
 
   React.useEffect(() => {
-    getAllUsers()
-  }, [])
+    getAllUsers();
+  }, []);
 
-  const [user2, setUser] = React.useState([])
-
-  React.useEffect(() => {
-    setUser(users?.filter(u => u.gid === 3))
-  }, [users])
-
-  const [host, setHost] = React.useState([])
+  const [user2, setUser] = React.useState([]);
 
   React.useEffect(() => {
-    setHost(users?.filter(u => u.gid === 2))
-  }, [users])
+    setUser(users?.filter((u) => u.gid === 3));
+  }, [users]);
+
+  const [host, setHost] = React.useState([]);
+
+  React.useEffect(() => {
+    setHost(users?.filter((u) => u.gid === 2));
+  }, [users]);
 
   const stats = [
     {
-      label: 'Users',
-      value: user?.length,
-      icon: <PersonIcon fontSize="large" sx={{ color: '#4a00e0' }} />,
-      bgColor: '#eef4ff',
-      textColor: '#2962ff',
+      label: "Users",
+      value: user2?.length,
+      icon: <PersonIcon fontSize="large" sx={{ color: "#4a00e0" }} />,
+      bgColor: "#eef4ff",
+      textColor: "#2962ff",
     },
     {
-      label: 'Hosts',
+      label: "Hosts",
       value: host?.length,
-      icon: <BusinessCenterIcon fontSize="large" sx={{ color: '#ff8f00' }} />,
-      bgColor: '#fff8e1',
-      textColor: '#ff6f00',
+      icon: <BusinessCenterIcon fontSize="large" sx={{ color: "#ff8f00" }} />,
+      bgColor: "#fff8e1",
+      textColor: "#ff6f00",
     },
     {
-      label: 'Projects',
+      label: "Projects",
       value: 356,
-      icon: <MailIcon fontSize="large" sx={{ color: '#00b0ff' }} />,
-      bgColor: '#e1f5fe',
-      textColor: '#039be5',
+      icon: <MailIcon fontSize="large" sx={{ color: "#00b0ff" }} />,
+      bgColor: "#e1f5fe",
+      textColor: "#039be5",
     },
     {
-      label: 'Events',
+      label: "Events",
       value: 696,
-      icon: <EventIcon fontSize="large" sx={{ color: '#ff5252' }} />,
-      bgColor: '#ffebee',
-      textColor: '#ff3d00',
+      icon: <EventIcon fontSize="large" sx={{ color: "#ff5252" }} />,
+      bgColor: "#ffebee",
+      textColor: "#ff3d00",
     },
   ];
 
   // Component selector based on route
   const renderContent = () => {
     switch (router.pathname) {
-      case '/category':
+      case "/category":
         return <Category />;
-      case '/dashboard':
+      case "/host":
+        return <Host />;
+      case "/dashboard":
       default:
         return (
-          <Box sx={{ width: 900, margin: 'auto', mt: 4 }}>
-            <Grid container spacing={3} >
+          <Box sx={{ width: 900, margin: "auto", mt: 4 }}>
+            <Grid container spacing={3}>
               {stats.map((item, index) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
-                  <Paper elevation={3} sx={{
-                    width: 200, // fixed width
-                    height: 180, // optional: fixed height
-                    p: 3,
-                    backgroundColor: item.bgColor,
-                    borderRadius: 3,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
+                  <Paper
+                    elevation={3}
+                    sx={{
+                      width: 200, // fixed width
+                      height: 180, // optional: fixed height
+                      p: 3,
+                      backgroundColor: item.bgColor,
+                      borderRadius: 3,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
                     <Box display="flex" justifyContent="center" mb={2}>
                       {item.icon}
                     </Box>
-                    <Typography align="center" variant="subtitle1" sx={{ color: item.textColor }}>
+                    <Typography
+                      align="center"
+                      variant="subtitle1"
+                      sx={{ color: item.textColor }}
+                    >
                       {item.label}
                     </Typography>
-                    <Typography align="center" variant="h5" sx={{ fontWeight: 600, color: item.textColor }}>
+                    <Typography
+                      align="center"
+                      variant="h5"
+                      sx={{ fontWeight: 600, color: item.textColor }}
+                    >
                       {item.value}
                     </Typography>
                   </Paper>
@@ -224,8 +241,8 @@ export default function Dashboard(props) {
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 650 }} aria-label="caption table">
                 <caption>Hosts</caption>
-                <TableHead >
-                  <TableRow >
+                <TableHead>
+                  <TableRow>
                     <TableCell>Name</TableCell>
                     <TableCell>Email</TableCell>
                     <TableCell>Phone no</TableCell>
