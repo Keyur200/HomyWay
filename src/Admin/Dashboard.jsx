@@ -27,8 +27,9 @@ import MailIcon from "@mui/icons-material/Mail";
 import EventIcon from "@mui/icons-material/Event";
 import { AuthContext } from "../Context/AuthProvider";
 import Host from "./Host";
-import { CategoryOutlined, LogoutOutlined, TourOutlined } from "@mui/icons-material";
+import { AddCircleOutline, CategoryOutlined, FormatAlignCenter, FormatListBulleted, LocationCity, LogoutOutlined, TourOutlined } from "@mui/icons-material";
 import User from "./User";
+import AddProperty from "./addProperty";
 const NAVIGATION = [
   {
     kind: "header",
@@ -60,36 +61,38 @@ const NAVIGATION = [
     segment: "logout",
     title: "Logout",
     icon: <LogoutOutlined />,
-  }
-  // {
-  //   kind: "divider",
-  // },
-  // {
-  //   kind: "header",
-  //   title: "Analytics",
-  // },
-  // {
-  //   segment: "reports",
-  //   title: "Reports",
-  //   icon: <BarChartIcon />,
-  //   children: [
-  //     {
-  //       segment: "sales",
-  //       title: "Sales",
-  //       icon: <DescriptionIcon />,
-  //     },
-  //     {
-  //       segment: "traffic",
-  //       title: "Traffic",
-  //       icon: <DescriptionIcon />,
-  //     },
-  //   ],
-  // },
-  // {
-  //   segment: "integrations",
-  //   title: "Integrations",
-  //   icon: <LayersIcon />,
-  // },
+  },
+   {
+    segment: "addProperty",
+    title: "Add Property",
+    icon: <AddCircleOutline />,
+  },
+  {
+    kind: "divider",
+  },
+  
+  {
+    segment: "property",
+    title: "Property",
+    icon: <LocationCity />,
+    children: [
+      {
+        segment: "addProperty",
+        title: "Add Property",
+        icon: <AddCircleOutline />,
+      },
+      {
+        segment: "property",
+        title: "property",
+        icon: <FormatAlignCenter />,
+      },
+    ],
+  },
+  {
+    segment: "integrations",
+    title: "Integrations",
+    icon: <LayersIcon />,
+  },
 ];
 
 
@@ -231,7 +234,9 @@ export default function Dashboard(props) {
       case "/host":
         return <Host />;
         case "/user":
-          return <User/>;
+          return <User />;
+        case "/addProperty":
+          return <AddProperty />;
       case "/dashboard":
       default:
         return (
