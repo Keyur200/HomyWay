@@ -107,45 +107,45 @@ function User() {
                         minWidth: 80,
                       }}
                     >
-                      {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
+                      {row?.status?.charAt(0)?.toUpperCase() + row?.status?.slice(1)}
                     </Box>
                   </TableCell>
 
                   <TableCell align="right">
-  <Box
-    sx={{
-      display: "flex",
-      justifyContent: "flex-end",
-      gap: 1,
-    }}
-  >
-    {row.status === "block" && (
-      <Tooltip title="Activate User" arrow>
-        <Button
-          variant="outlined"
-          color="success"
-          sx={{ borderRadius: 2, minWidth: 40, padding: 1 }}
-          onClick={() => handleUpdateUserStatus(row.id, "active")}
-        >
-          <CheckCircleIcon />
-        </Button>
-      </Tooltip>
-    )}
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        gap: 1,
+                      }}
+                    >
+                      {row.status === "block" && (
+                        <Tooltip title="Activate User" arrow>
+                          <Button
+                            variant="outlined"
+                            color="success"
+                            sx={{ borderRadius: 2, minWidth: 40, padding: 1 }}
+                            onClick={() => handleUpdateUserStatus(row?.id, "active")}
+                          >
+                            <CheckCircleIcon />
+                          </Button>
+                        </Tooltip>
+                      )}
 
-    {row.status === "active" && (
-      <Tooltip title="Block User" arrow>
-        <Button
-          variant="outlined"
-          color="error"
-          sx={{ borderRadius: 2, minWidth: 40, padding: 1 }}
-          onClick={() => handleUpdateUserStatus(row.id, "block")}
-        >
-          <BlockIcon />
-        </Button>
-      </Tooltip>
-    )}
-  </Box>
-</TableCell>
+                      {row.status === "active" && (
+                        <Tooltip title="Block User" arrow>
+                          <Button
+                            variant="outlined"
+                            color="error"
+                            sx={{ borderRadius: 2, minWidth: 40, padding: 1 }}
+                            onClick={() => handleUpdateUserStatus(row?.id, "block")}
+                          >
+                            <BlockIcon />
+                          </Button>
+                        </Tooltip>
+                      )}
+                    </Box>
+                  </TableCell>
 
                 </TableRow>
               ))}

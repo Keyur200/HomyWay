@@ -4,6 +4,7 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Dashboard from './Admin/Dashboard'
+import HostDashboard from './Host/Dashboard'
 import Category from './Admin/Category'
 import Login from './Pages/Login'
 import Home from './Pages/Home'
@@ -20,7 +21,7 @@ function App() {
             <Route path='/' element={<Home />} />
             <Route path='/login' element={<Login />} />
             <Route path='/admin/dashboard' element={<AdminRoute><Dashboard/></AdminRoute>} />
-            <Route path='/admin/category' element={<Category />} />
+            <Route path='/host/dashboard' element={<HostDashboard />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>

@@ -90,7 +90,7 @@ function Host() {
                         minWidth: 80,
                       }}
                     >
-                      {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
+                      {row?.status?.charAt(0)?.toUpperCase() + row?.status?.slice(1)}
                     </Box>
                   </TableCell>
 
@@ -110,7 +110,7 @@ function Host() {
                             row.status === "block") && (
                             <Tooltip
                               title={
-                                row.status === "pending"
+                                row.status === "pending" 
                                   ? "Approve Host"
                                   : "Activate Host"
                               }
