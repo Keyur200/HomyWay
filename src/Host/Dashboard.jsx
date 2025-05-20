@@ -27,6 +27,12 @@ import EventIcon from "@mui/icons-material/Event";
 import { AuthContext } from "../Context/AuthProvider";
 import { CategoryOutlined, LogoutOutlined, TourOutlined } from "@mui/icons-material";
 import MyProperty from "./MyProperty";
+import LocationCity from "@mui/icons-material/LocationCity";
+import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
+import FormatAlignCenter from "@mui/icons-material/FormatAlignCenter";
+import AddProperty from "./AddProperty"; // Adjust path if necessary
+
+
 
 export default function Dashboard(props) {
   const { window } = props;
@@ -45,10 +51,22 @@ const NAVIGATION = [
     icon: <DashboardIcon />,
   },
   {
-    segment: "property",
-    title: "My Property",
-    icon: <ShoppingCartIcon />,
-  },{
+      segment: "property",
+      title: "Property",
+      icon: <LocationCity />,
+      children: [
+        {
+          segment: "addProperty",
+          title: "Add Property",
+          icon: <AddCircleOutline />,
+        },
+        {
+          segment: "property",
+          title: "property",
+          icon: <FormatAlignCenter />,
+        },
+      ],
+    },{
     segment: "logout",
     title: "Logout",
     icon: <LogoutOutlined />,
@@ -88,8 +106,8 @@ function useDemoRouter(initialPath) {
   // Component selector based on route
   const renderContent = () => {
     switch (router.pathname) {
-        case "/property":
-        return <MyProperty />;
+        case "/property/addProperty":
+        return <AddProperty />;
       case "/dashboard":
       default:
         return (
