@@ -1,0 +1,53 @@
+.editor-container {
+  border: 1px solid #444;
+  border-radius: 8px;
+  background-color: #1e1e1e; /* Slightly lighter than #121212 for contrast */
+  padding: 8px;
+  color: #e0e0e0;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.toolbar button {
+  background-color: #2a2a2a;
+  border: 1px solid #555;
+  color: #ccc;
+  padding: 6px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.toolbar button:hover {
+  background-color: #333;
+}
+
+.toolbar button.active {
+  background-color: #1976d2;
+  color: #fff;
+  border-color: #1976d2;
+}
+
+.editor {
+  min-height: 150px;
+  padding: 10px;
+  background-color: #121212; /* match parent background */
+  border: 1px solid #333;
+  border-radius: 6px;
+  
+  max-height: 400px;
+  color: #e0e0e0;
+  font-size: 1rem;
+}
+
+.editor .tiptap{
+    min-height: 150px;
+    border: none;
+    outline: none;
+}

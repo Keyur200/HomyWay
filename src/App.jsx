@@ -10,6 +10,8 @@ import Login from './Pages/Login'
 import Home from './Pages/Home'
 import AuthProvider from './Context/AuthProvider'
 import AdminRoute from './Protected/AdminRoute'
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
 
 function App() {
 

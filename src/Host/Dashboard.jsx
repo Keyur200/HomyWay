@@ -41,16 +41,16 @@ export default function Dashboard(props) {
   const demoWindow = window ? window() : undefined;
   const [users, setUsers] = React.useState([]);
   const [category, setCategory] = React.useState([]);
-const NAVIGATION = [
-  {
-    kind: "header",
-    title: "Main items",
-  },
-  {
-    title: "Dashboard",
-    icon: <DashboardIcon />,
-  },
-  {
+  const NAVIGATION = [
+    {
+      kind: "header",
+      title: "Main items",
+    },
+    {
+      title: "Dashboard",
+      icon: <DashboardIcon />,
+    },
+    {
       segment: "property",
       title: "Property",
       icon: <LocationCity />,
@@ -61,59 +61,61 @@ const NAVIGATION = [
           icon: <AddCircleOutline />,
         },
         {
-          segment: "property",
+          segment: "myproperty",
           title: "property",
           icon: <FormatAlignCenter />,
         },
       ],
-    },{
-    segment: "logout",
-    title: "Logout",
-    icon: <LogoutOutlined />,
-  }
-];
+    }, {
+      segment: "logout",
+      title: "Logout",
+      icon: <LogoutOutlined />,
+    }
+  ];
 
-const demoTheme = createTheme({
-  colorSchemes: { light: true, dark: true },
-  cssVariables: {
-    colorSchemeSelector: "class",
-  },
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 600,
-      md: 600,
-      lg: 1200,
-      xl: 1536,
+  const demoTheme = createTheme({
+    colorSchemes: { light: true, dark: true },
+    cssVariables: {
+      colorSchemeSelector: "class",
     },
-  },
-});
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 600,
+        md: 600,
+        lg: 1200,
+        xl: 1536,
+      },
+    },
+  });
 
 
-function useDemoRouter(initialPath) {
-  const [pathname, setPathname] = React.useState(initialPath);
+  function useDemoRouter(initialPath) {
+    const [pathname, setPathname] = React.useState(initialPath);
 
-  const router = React.useMemo(() => {
-    return {
-      pathname,
-      searchParams: new URLSearchParams(),
-      navigate: (path) => setPathname(String(path)),
-    };
-  }, [pathname]);
+    const router = React.useMemo(() => {
+      return {
+        pathname,
+        searchParams: new URLSearchParams(),
+        navigate: (path) => setPathname(String(path)),
+      };
+    }, [pathname]);
 
-  return router;
-}
+    return router;
+  }
   // Component selector based on route
   const renderContent = () => {
     switch (router.pathname) {
-        case "/property/addProperty":
+      case "/property/addProperty":
         return <AddProperty />;
+      case "/property/myproperty":
+        return <MyProperty />;
       case "/dashboard":
       default:
         return (
           <Box sx={{ width: 900, margin: "auto", mt: 4 }}>
-           
-           
+
+
           </Box>
         );
     }
