@@ -31,6 +31,7 @@ import LocationCity from "@mui/icons-material/LocationCity";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import FormatAlignCenter from "@mui/icons-material/FormatAlignCenter";
 import AddProperty from "./AddProperty"; // Adjust path if necessary
+import EditProperty from "./EditProperty";
 
 
 
@@ -59,6 +60,11 @@ export default function Dashboard(props) {
           segment: "addProperty",
           title: "Add Property",
           icon: <AddCircleOutline />,
+        },
+        {
+          segment: "editProperty",
+          title: "Edit Property",
+          icon: <FormatAlignCenter />,
         },
         {
           segment: "myproperty",
@@ -110,6 +116,8 @@ export default function Dashboard(props) {
         return <AddProperty />;
       case "/property/myproperty":
         return <MyProperty />;
+      case "/property/editProperty":
+        return <EditProperty />;
       case "/dashboard":
       default:
         return (
