@@ -20,3 +20,8 @@
   color: white !important;
   opacity: 1;
 }
+
+body {
+  background-color: #000;
+  color: #fff;
+}

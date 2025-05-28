@@ -12,6 +12,9 @@ import AuthProvider from './Context/AuthProvider'
 import AdminRoute from './Protected/AdminRoute'
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
+import Navbar2 from './Components/Navbar2'
+import FarmHouse from './Pages/FarmHouse'
+import Villa from './Pages/Villa'
 
 function App() {
 
@@ -22,6 +25,8 @@ function App() {
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path='/login' element={<Login />} />
+            <Route path='/farmhouse' element={<FarmHouse />} />
+            <Route path='/villa' element={<Villa />} />
             <Route path='/admin/dashboard' element={<AdminRoute><Dashboard/></AdminRoute>} />
             <Route path='/host/dashboard' element={<HostDashboard />} />
           </Routes>
