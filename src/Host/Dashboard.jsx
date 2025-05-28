@@ -19,7 +19,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import axios from "axios";
 import { api } from "../api";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Container } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import MailIcon from "@mui/icons-material/Mail";
@@ -32,6 +32,7 @@ import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import FormatAlignCenter from "@mui/icons-material/FormatAlignCenter";
 import AddProperty from "./AddProperty"; // Adjust path if necessary
 import EditProperty from "./EditProperty";
+import BookingPerPropertyChart from "./BookingPerPropertyChart";
 
 
 
@@ -79,6 +80,39 @@ export default function Dashboard(props) {
     }
   ];
 
+  const [bookings, setBooking] = React.useState([])
+
+  const getAllBookings = async () => {
+    const res = await axios.get(`${api}/Bookings/host/${user?.id}`)
+    if (res?.data) {
+      setBooking(res?.data)
+    }
+  }
+
+  React.useEffect(() => {
+    getAllBookings()
+    totalEarnings()
+    getMyProperty()
+  }, [user?.id])
+
+  const [earning, setEarning] = React.useState(0)
+
+  const totalEarnings = async () => {
+    const res = await axios.get(`${api}/Bookings/total/${user?.id}`)
+    if (res?.data) {
+      setEarning(res?.data)
+    }
+  }
+
+  const [properties, setProperties] = React.useState([])
+  const getMyProperty = async () => {
+    const res = await axios.get(`${api}/Property/host/${user?.id}`)
+    if (res?.data) {
+      setProperties(res?.data)
+    }
+  }
+
+
   const demoTheme = createTheme({
     colorSchemes: { light: true, dark: true },
     cssVariables: {
@@ -94,6 +128,37 @@ export default function Dashboard(props) {
       },
     },
   });
+
+  const stats = [
+    {
+      label: "Total Earnings",
+      value: earning,
+      icon: <PersonIcon fontSize="large" sx={{ color: "#4a00e0" }} />,
+      bgColor: "#eef4ff",
+      textColor: "#2962ff",
+    },
+    {
+      label: "My Hosting",
+      value: properties?.length,
+      icon: <BusinessCenterIcon fontSize="large" sx={{ color: "#ff8f00" }} />,
+      bgColor: "#fff8e1",
+      textColor: "#ff6f00",
+    },
+    {
+      label: "Total Booking",
+      value: bookings?.length,
+      icon: <CategoryOutlined fontSize="large" sx={{ color: "#00b0ff" }} />,
+      bgColor: "#e1f5fe",
+      textColor: "#039be5",
+    },
+    {
+      label: "Events",
+      value: 696,
+      icon: <EventIcon fontSize="large" sx={{ color: "#ff5252" }} />,
+      bgColor: "#ffebee",
+      textColor: "#ff3d00",
+    },
+  ];
 
 
   function useDemoRouter(initialPath) {
@@ -123,7 +188,46 @@ export default function Dashboard(props) {
         return (
           <Box sx={{ width: 900, margin: "auto", mt: 4 }}>
 
-
+            <Typography variant="h4" gutterBottom>Host Dashboard</Typography>
+            <Grid container spacing={3}>
+              {stats.map((item, index) => (
+                <Grid item xs={12} sm={6} md={3} key={index}>
+                  <Paper
+                    elevation={3}
+                    sx={{
+                      width: 200, // fixed width
+                      height: 180, // optional: fixed height
+                      p: 3,
+                      backgroundColor: item.bgColor,
+                      borderRadius: 3,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Box display="flex" justifyContent="center" mb={2}>
+                      {item.icon}
+                    </Box>
+                    <Typography
+                      align="center"
+                      variant="subtitle1"
+                      sx={{ color: item.textColor }}
+                    >
+                      {item.label}
+                    </Typography>
+                    <Typography
+                      align="center"
+                      variant="h5"
+                      sx={{ fontWeight: 600, color: item.textColor }}
+                    >
+                      {item.value}
+                    </Typography>
+                  </Paper>
+                </Grid>
+              ))}
+            </Grid>
+            <BookingPerPropertyChart />
           </Box>
         );
     }

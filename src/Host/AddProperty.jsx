@@ -184,7 +184,6 @@ export default function AddProperty() {
     const res = await axios.get(`${api}/Amenities`)
     if (res.data) {
       setAmenities(res?.data)
-      console.log(res?.data)
     }
   }
   const [selected, setSelected] = useState([]);
