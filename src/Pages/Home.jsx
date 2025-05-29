@@ -20,6 +20,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Navbar2 from "../Components/Navbar2";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const [propertiesByFarmHouse, setPropertiesByFarmHouse] = useState([]);
@@ -39,7 +40,7 @@ const [propertiesByVilla, setPropertiesByVilla] = useState([]);
 
   // Fetch properties of type "Villa" from the API
   const getMyPropertyVilla = async () => {
-    const res = await axios.get(`${api}/Property/category/1`);
+    const res = await axios.get(`${api}/Property/category/2`);
     if (res?.data) {
       setPropertiesByVilla(res.data);
     }
@@ -283,7 +284,7 @@ const [propertiesByVilla, setPropertiesByVilla] = useState([]);
                   </Stack>
 
                   <Typography variant="body2" color="rgb(187 187 187)">
-                    {p?.propertyName}
+                    <Link to={`property/${p?.slugName}`}>{p?.propertyName}</Link>
                   </Typography>
                   <Typography variant="body2" color="rgb(187 187 187)">
                     {p?.bed} beds · {p?.bedRoom} bedrooms

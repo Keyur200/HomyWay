@@ -15,6 +15,7 @@ import "slick-carousel/slick/slick-theme.css";
 import Navbar2 from './Components/Navbar2'
 import FarmHouse from './Pages/FarmHouse'
 import Villa from './Pages/Villa'
+import PropertyDetail from './Pages/PropertyDetail'
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
             <Route path='/login' element={<Login />} />
             <Route path='/farmhouse' element={<FarmHouse />} />
             <Route path='/villa' element={<Villa />} />
+            <Route path='/property/:slug' element={<PropertyDetail/>} />
             <Route path='/admin/dashboard' element={<AdminRoute><Dashboard/></AdminRoute>} />
             <Route path='/host/dashboard' element={<HostDashboard />} />
           </Routes>
