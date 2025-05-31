@@ -160,7 +160,7 @@ const MyProperty = () => {
       setLongitude(selectedProperty.longitude);
       setcid(selectedProperty.categoryId);
       setSelected(JSON.parse(selectedProperty.amenities || "[]"));
-      setExistingImages(selectedProperty.imagesNavigation || "[]"); 
+      setExistingImages(selectedProperty.imagesNavigation || "[]");
     }
   }, [selectedProperty]);
 
@@ -190,7 +190,7 @@ const MyProperty = () => {
       const res = await axios.put(`${api}/Property/${selectedProperty.propertyId}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      alert("Update successful!");
+      setActiveStep(0)
       getMyProperty()
       setOpenEdit(false);
     } catch (err) {
@@ -201,7 +201,7 @@ const MyProperty = () => {
 
   const handleDeleteClick = async (id) => {
     const res = await axios.delete(`${api}/Property/${id}`)
-    if(res){
+    if (res) {
       getMyProperty()
     }
   }
@@ -261,6 +261,18 @@ const MyProperty = () => {
 
     console.log(selected)
   };
+
+  const handleDeleteExistingImage = async (id) => {
+    try {
+      await axios.delete(`${api}/Property/DeleteImage/${id}`);
+      setExistingImages((prev) =>
+        prev.filter((img) => img.id !== id)
+      );
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete image from database");
+    }
+  }
   const NextArrow = (props) => {
     const { className, style, onClick } = props;
     return (
@@ -528,23 +540,23 @@ const MyProperty = () => {
               </Box>
             )}
             <Box
-               mt={3} display="flex" flexWrap="wrap" gap={1} justifyContent="center"
+              mt={3} display="flex" flexWrap="wrap" gap={1} justifyContent="center"
             >
               {existingImages.map((img, index) => (
                 <Box
                   key={index}
                   sx={{
-                        width: 80,
-                        height: 80,
-                        borderRadius: 2,
-                        overflow: 'hidden',
-                        boxShadow: 2,
-                        backgroundColor: '#1e1e1e',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        position:'relative'
-                      }}
+                    width: 80,
+                    height: 80,
+                    borderRadius: 2,
+                    overflow: 'hidden',
+                    boxShadow: 2,
+                    backgroundColor: '#1e1e1e',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative'
+                  }}
                 >
                   <img
                     src={img?.imageUrl}
@@ -553,7 +565,7 @@ const MyProperty = () => {
                   />
                   <IconButton
                     size="small"
-                    onClick={() => handleDeleteExistingImage(index)}
+                    onClick={() => handleDeleteExistingImage(img?.id)}
                     sx={{
                       position: "absolute",
                       top: 0,
@@ -728,7 +740,7 @@ const MyProperty = () => {
                   </button>
                   <button
                     style={{
-                      marginLeft:'10px',
+                      marginLeft: '10px',
                       padding: '6px 12px',
                       backgroundColor: '#cd3115',
                       color: '#fff',
@@ -740,7 +752,7 @@ const MyProperty = () => {
                   >
                     Delete
                   </button>
-                </Box>  
+                </Box>
               </CardContent>
             </Card>
 
