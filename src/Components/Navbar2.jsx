@@ -18,6 +18,7 @@ import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
 import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
+import homywayLogo from "../assets/images/homywayLogo.png";
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
@@ -64,20 +65,17 @@ function Navbar2() {
         background: "rgb(54 54 54 / 40%)"}}>
           {/* Left: Logo */}
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Typography
-              variant="h6"
-              component={Link}
-              to="/"
-              sx={{
-                textDecoration: "none",
-                color: "#0288d1",
-                fontWeight: 600,
-                fontSize: "1.4rem",
-                letterSpacing: 1,
-              }}
-            >
-              HomyWay
-            </Typography>
+            <Link to="/">
+              <img 
+                src={homywayLogo} 
+                alt="HomyWay Logo" 
+                style={{ 
+                  height: "40px",
+                  width: "auto",
+                }}
+              />
+            </Link>
+           
           </Box>
 
           {/* Center: Menu Items */}
