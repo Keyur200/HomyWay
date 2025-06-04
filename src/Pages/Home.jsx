@@ -40,7 +40,7 @@ const [propertiesByVilla, setPropertiesByVilla] = useState([]);
 
   // Fetch properties of type "Villa" from the API
   const getMyPropertyVilla = async () => {
-    const res = await axios.get(`${api}/Property/category/2`);
+    const res = await axios.get(`${api}/Property/category/1`);
     if (res?.data) {
       setPropertiesByVilla(res.data);
     }
