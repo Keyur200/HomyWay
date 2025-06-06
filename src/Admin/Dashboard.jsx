@@ -172,23 +172,40 @@ export default function Dashboard(props) {
     getAllCategories();
   },[])
 
-  // get only user details 
+ 
   const [user2, setUser] = React.useState([]);
 
   React.useEffect(() => {
     setUser(users?.filter((u) => u.gid === 3));
   }, [users]);
 
-  // get only host details 
+  
   const [host, setHost] = React.useState([]);
 
   React.useEffect(() => {
     setHost(users?.filter((u) => u.gid === 2));
   }, [users]);
 
+  const [earnings,setEarnings] = React.useState(0)
+  const getEarnings = async () => {
+    const res = await axios.get(`${api}/Bookings/adminEarnings`)
+    if(res?.data){
+      setEarnings(res?.data)
+    }
+  }
 
-// data for box details like user count || host count || category count
+  React.useEffect(()=>{
+    getEarnings()
+  },[])
+
   const stats = [
+    {
+      label: "Total Earnings",
+      value: earnings,
+      icon: <EventIcon fontSize="large" sx={{ color: "#ff5252" }} />,
+      bgColor: "#ffebee",
+      textColor: "#ff3d00",
+    },
     {
       label: "Users",
       value: user2?.length,
@@ -210,13 +227,7 @@ export default function Dashboard(props) {
       bgColor: "#e1f5fe",
       textColor: "#039be5",
     },
-    {
-      label: "Events",
-      value: 696,
-      icon: <EventIcon fontSize="large" sx={{ color: "#ff5252" }} />,
-      bgColor: "#ffebee",
-      textColor: "#ff3d00",
-    },
+    
   ];
 
   // Component selector based on route

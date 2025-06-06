@@ -84,6 +84,7 @@ const Booking = () => {
               name: bookingInfo.name,
               phone: bookingInfo.phone,
               amount: bookingInfo.totalPrice,
+              homywayCharges: bookingInfo.homywayCharges,
               paymentId: response.razorpay_payment_id,
               orderId: response.razorpay_order_id,
               signature: response.razorpay_signature,
@@ -104,7 +105,7 @@ const Booking = () => {
         },
         prefill: {
           name: bookingInfo.name,
-          contact: 6356369875,
+          contact: 8141451738,
           email: "test@example.com" // Test email
         },
         notes: {

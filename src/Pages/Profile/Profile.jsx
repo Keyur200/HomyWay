@@ -26,10 +26,14 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import axios from "axios";
 import { api } from "../../api";
 import { AuthContext } from "../../Context/AuthProvider";
+import MyBookings from "./MyBookings";
+import MyWishlist from "./MyWishlist";
 
 const NAVIGATION = [
   { kind: "header", title: "Main items" },
   { title: "Profile", icon: <PersonIcon /> },
+  { title: "My Bookings", icon: <PersonIcon />,segment: "mybookings" },
+  { title: "My Favourites", icon: <PersonIcon />,segment: "mywishlist" },
   { segment: "integrations", title: "Integrations", icon: <LayersIcon /> },
 ];
 
@@ -179,6 +183,14 @@ export default function Profile(props) {
   };
 
   const renderContent = () => {
+      switch (router.pathname) {
+          case "/mybookings":
+            return <MyBookings />;
+          case "/mywishlist":
+            return <MyWishlist />;
+          case "/profile":
+          default:
+      
     return (
       <Box sx={{ maxWidth: 800, mx: "auto", p: 3 }}>
         <Card sx={{ position: 'relative', mb: 4 }}>
@@ -286,6 +298,7 @@ export default function Profile(props) {
       </Box>
     );
   };
+}
 
   // If user data is not loaded yet, show loading state
   if (!user) {

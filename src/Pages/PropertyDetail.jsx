@@ -6,6 +6,7 @@ import { AuthContext } from "../Context/AuthProvider";
 import { differenceInCalendarDays, eachDayOfInterval } from "date-fns";
 import { toast } from "react-toastify";
 import { IoMdGrid } from "react-icons/io";
+import { FaStar, FaRegStar } from "react-icons/fa";
 import { RiCloseLargeFill, RiCloseLargeLine, RiArrowLeftSLine } from "react-icons/ri";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -15,8 +16,8 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import dayjs from 'dayjs';
 import { styled } from '@mui/material/styles';
+import { GoogleMap, InfoWindow, LoadScript, Marker, StandaloneSearchBox, useJsApiLoader } from '@react-google-maps/api';
 
-// Styled day for blocked dates
 const BlockedDay = styled(PickersDay)(({ theme }) => ({
   backgroundColor: '#b0dcf3',
   color: 'white',
@@ -50,7 +51,7 @@ const PropertyDetail = () => {
           const start = new Date(booking.checkkin);
           const end = new Date(booking.checkout);
           // Include both check-in and check-out dates in the range
-          return eachDayOfInterval({ 
+          return eachDayOfInterval({
             start: start,
             end: end
           }).map(date => {
@@ -81,13 +82,13 @@ const PropertyDetail = () => {
   const year = today.getFullYear();
   const date = today.getDate();
   const currentDate = year + "-" + month + "-" + date;
-  let totalPrice = property?.propertyPrice * numberOfdays + 500;
+  let homywayCharges = property?.propertyPrice * 0.10;
+  let totalPrice = property?.propertyPrice * numberOfdays + 500 + homywayCharges;
 
   const getPropertyBySlug = async () => {
     const res = await axios.get(`${api}/Property/slugName/${slug}`);
     if (res?.data) {
       setProperty(res?.data);
-      // Fetch booked dates after getting property details
       getBookedDates(res?.data?.propertyId);
     }
   };
@@ -95,6 +96,10 @@ const PropertyDetail = () => {
   useEffect(() => {
     getPropertyBySlug();
   }, [slug]);
+
+  useEffect(() => {
+    getAllReviews()
+  }, [property])
 
   // Function to check if a date is booked
   const isDateBooked = (dateStr) => {
@@ -105,7 +110,7 @@ const PropertyDetail = () => {
   const disableDates = () => {
     const today = new Date().toISOString().split('T')[0];
     let dateList = '';
-    
+
     // Add all booked dates to the disabled list
     bookedDates.forEach(date => {
       dateList += `${date},`;
@@ -125,7 +130,7 @@ const PropertyDetail = () => {
   // Check if a date is blocked
   const isDateBlocked = (date) => {
     if (!date) return false;
-    
+
     // Check if date is in the past
     const today = dayjs().startOf('day');
     if (date.isBefore(today)) {
@@ -140,7 +145,7 @@ const PropertyDetail = () => {
   // Check if selected range includes any blocked date
   const isRangeValid = (start, end) => {
     if (!start || !end) return true;
-    
+
     // Check if start date is in the past
     const today = dayjs().startOf('day');
     if (start.isBefore(today)) {
@@ -159,14 +164,14 @@ const PropertyDetail = () => {
   // Handle date range change
   const handleDateRangeChange = (newValue) => {
     const [start, end] = newValue;
-    
+
     // Check if dates are in the past
     const today = dayjs().startOf('day');
     if (start && start.isBefore(today)) {
       toast.error("Check-in date cannot be in the past");
       return;
     }
-    
+
     // Only allow if both dates are selected and range is valid
     if (start && end && !isRangeValid(start, end)) {
       toast.error("Some dates in this range are already booked");
@@ -211,12 +216,13 @@ const PropertyDetail = () => {
           name,
           phone,
           totalPrice,
+          homywayCharges,
           userId: user?.id
         }
       };
 
       // Navigate to booking page with details
-      navigate('/booking', { 
+      navigate('/booking', {
         state: { bookingDetails }
       });
 
@@ -243,21 +249,54 @@ const PropertyDetail = () => {
     totalPrice = 0;
   };
 
+  const [reviews, setReviews] = useState([])
+  const getAllReviews = async () => {
+    const res = await axios.get(`${api}/Reviews/property/${property?.propertyId}`)
+    if (res?.data) {
+      setReviews(res?.data)
+    }
+  }
+
+  const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
+  const avgRating = reviews.length ? totalRating / reviews.length : 0;
+  const roundedRating = Math.floor(avgRating);
+
+  const containerStyle = {
+    width: '1000px',
+    height: '500px'
+  };
+
+  const center = {
+    lat: parseFloat(property?.latitude),
+    lng: parseFloat(property?.longitude)
+  };
+
+  useEffect(() => {
+    handleLoad()
+  }, [center])
+
+  const [mapLoaded, setMapLoaded] = useState(false);
+
+  const handleLoad = () => {
+    setMapLoaded(true);
+  };
+
+
   return (
-    <div className="w-full relative min-h-screen bg-[#000]">
+    <div className="w-full relative min-h-screen bg-[#f9f9f9] text-[#4f4f4f] mt-12">
       {/* Back Navigation */}
-      <Link 
-        to="/" 
+      <Link
+        to="/"
         className="fixed top-6 left-6 flex items-center gap-2 text-white bg-[#1e1e1e] px-4 py-2 rounded-full hover:bg-[#2a2a2a] transition-all duration-300 z-10 group"
       >
-        <RiArrowLeftSLine className="text-2xl text-[#0288d1] group-hover:transform group-hover:-translate-x-1 transition-transform" />
+        <RiArrowLeftSLine className="text-2xl text-[#b91c1c] group-hover:transform group-hover:-translate-x-1 transition-transform" />
         <span className="font-medium">Back to Home</span>
       </Link>
 
       <div className="w-full px-4 md:px-8 lg:px-16 xl:px-40 py-5 flex flex-col items-start">
         {/* Property Title */}
         <div className="flex justify-between items-center w-full">
-          <h2 className="text-2xl md:text-3xl font-semibold mb-3 text-[#0288d1]">
+          <h2 className="text-2xl md:text-3xl font-semibold mb-3 text-[#b91c1c]">
             {property?.propertyName}
           </h2>
         </div>
@@ -268,7 +307,7 @@ const PropertyDetail = () => {
             {/* Main Image */}
             <div className="overflow-hidden h-full">
               <img
-                src={property.imagesNavigation[0].imageUrl}
+                src={property.imagesNavigation[0]?.imageUrl}
                 className="w-full h-full overflow-hidden hover:scale-110 transition-all duration-300 cursor-pointer object-cover"
                 alt="Property"
               />
@@ -324,9 +363,9 @@ const PropertyDetail = () => {
         {/* Main Content */}
         <div className="flex flex-col lg:flex-row w-full mt-6 gap-6">
           {/* Left Column - Property Details */}
-          <div className="w-full lg:w-[65%] bg-[#1e1e1e] p-6 rounded-xl shadow-sm">
+          <div className="w-full lg:w-[65%] p-6 rounded-xl shadow-sm">
             <div className="flex flex-col items-start">
-              <span className="text-xl md:text-2xl font-semibold text-[#0288d1]">
+              <span className="text-xl md:text-2xl font-semibold text-[#b91c1c]">
                 {property?.propertyAddress}
               </span>
               <span className="text-[#6b6b6b] text-base md:text-lg">
@@ -387,7 +426,7 @@ const PropertyDetail = () => {
           {/* Right Column - Booking Form */}
           <div className="w-full lg:w-[35%] mt-6 lg:mt-0">
             {user ? (
-              <div className="sticky top-6 border border-[#e1e1e1] rounded-xl p-4 md:p-6 shadow-xl bg-[#1e1e1e]">
+              <div className="sticky top-6 border border-[#e1e1e1] rounded-xl p-4 md:p-6 shadow-xl">
                 <div className="flex justify-between items-center">
                   <h2 className="text-xl md:text-2xl flex gap-1 font-semibold items-end">
                     ₹ {property?.propertyPrice}{" "}
@@ -396,7 +435,7 @@ const PropertyDetail = () => {
                   {checkin && checkout && numberofguests && numberOfdays > 0 && totalPrice > 0 && (
                     <button
                       onClick={handleReset}
-                      className="bg-[#0288d1] text-white font-semibold px-3 md:px-4 py-2 rounded-full hover:bg-[#0277bd] transition-colors duration-200 text-sm md:text-base"
+                      className="bg-[#b91c1c] text-white font-semibold px-3 md:px-4 py-2 rounded-full hover:bg-[#b91c1c] transition-colors duration-200 text-sm md:text-base"
                     >
                       Reset All
                     </button>
@@ -436,7 +475,7 @@ const PropertyDetail = () => {
                                 return {};
                               },
                               textField: {
-                                className: "w-full px-3 py-2 text-sm text-white-800 border border-[#0288d1] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0288d1] transition-colors"
+                                className: "w-full px-3 py-2 text-sm text-white-800 border border-[#b91c1c] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b91c1c] transition-colors"
                               }
                             }}
                           />
@@ -455,7 +494,8 @@ const PropertyDetail = () => {
                       min={1}
                       max={property?.maxGuests}
                       placeholder="Number of guests"
-                      className="w-full px-3 py-2 text-sm text-gray-800 border border-[#0288d1] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0288d1] transition-colors"
+                      className="w-full px-3 py-2 text-sm text-gray-800 border border-[#b91c1c] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b91c1c] transition-colors"
+
                     />
                   </div>
 
@@ -468,7 +508,7 @@ const PropertyDetail = () => {
                           type="text"
                           value={name}
                           onChange={(e) => setName(e.target.value)}
-                          className="w-full px-3 py-2 text-sm text-gray-800 border border-[#0288d1] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0288d1] transition-colors"
+                          className="w-full px-3 py-2 text-sm text-gray-800 border border-[#b91c1c] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b91c1c] transition-colors"
                         />
                       </div>
                       <div>
@@ -480,7 +520,7 @@ const PropertyDetail = () => {
                           value={phone}
                           onChange={(e) => setphone(e.target.value)}
                           placeholder="Phone number"
-                          className="w-full px-3 py-2 text-sm text-gray-800 border border-[#0288d1] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0288d1] transition-colors"
+                          className="w-full px-3 py-2 text-sm text-gray-800 border border-[#b91c1c] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b91c1c] transition-colors"
                         />
                       </div>
                     </div>
@@ -491,18 +531,22 @@ const PropertyDetail = () => {
                     <div className="border-t border-[#B0B0B0] p-3 space-y-2">
                       <div className="flex justify-between">
                         <span className="text-base">Cleaning fees</span>
-                        <span className="font-bold text-[#0288d1]">₹ 500</span>
+                        <span className="font-bold text-[#b91c1c]">₹ 500</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-base">HomyWay Charges</span>
+                        <span className="font-bold text-[#b91c1c]">₹ {homywayCharges}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-base">Total nights</span>
-                        <span className="font-bold text-[#0288d1]">
+                        <span className="font-bold text-[#b91c1c]">
                           {numberOfdays > 0 && difference > -1 ? numberOfdays : "0"}
                         </span>
                       </div>
                       <hr className="border-[1px] my-2" />
                       <div className="flex justify-between">
                         <span className="text-base font-semibold">Total Price</span>
-                        <span className="font-bold text-[#0288d1]">
+                        <span className="font-bold text-[#b91c1c]">
                           ₹ {numberOfdays > 0 && difference > -1 ? totalPrice : "0"}
                         </span>
                       </div>
@@ -514,7 +558,7 @@ const PropertyDetail = () => {
                 {checkin && checkout && totalPrice > 0 ? (
                   <button
                     onClick={booking}
-                    className="w-full bg-[#0288d1] text-white font-semibold py-3 text-lg mt-4 rounded-full hover:bg-[#0277bd] transition-colors flex gap-3 items-center justify-center"
+                    className="w-full bg-[#b91c1c] text-white font-semibold py-3 text-lg mt-4 rounded-full hover:bg-[#b91c1c] transition-colors flex gap-3 items-center justify-center"
                   >
                     Book Now
                     <span className="text-base">
@@ -524,7 +568,7 @@ const PropertyDetail = () => {
                 ) : (
                   <button
                     disabled
-                    className="w-full bg-[#0288d1] opacity-70 cursor-not-allowed text-white font-semibold py-3 text-lg mt-4 rounded-full flex gap-1 items-center justify-center"
+                    className="w-full bg-[#b91c1c] opacity-70 cursor-not-allowed text-white font-semibold py-3 text-lg mt-4 rounded-full flex gap-1 items-center justify-center"
                   >
                     Book Now
                     <span className="text-base">
@@ -548,6 +592,74 @@ const PropertyDetail = () => {
             )}
           </div>
         </div>
+        <hr className='border-[1px] w-full my-7' />
+        <div className='w-full flex flex-col'>
+          <h2 className='text-2xl font-semibold flex gap-2 items-center'><FaStar />{avgRating} Ratings • {reviews?.length} Reviews</h2>
+          <div className='grid grid-cols-2 w-full mt-8'>
+            {
+              reviews?.map((v) => (
+                <div className='w-full flex flex-col'>
+                  <div className='flex gap-3 items-center'>
+                    <div className='bg-black px-5 py-3 text-white text-lg uppercase rounded-full font-bold'>{v?.user?.name[0]}</div>
+                    <span className='text-xl font-semibold'>{v?.user?.name}</span>
+                  </div>
+                  <div className='flex flex-col mt-3'>
+                    <div>
+                      {v?.rating !== undefined && (
+                        <span className="flex items-center gap-2 text-lg font-light">
+                          <div className="flex gap-1">
+                            {[...Array(5)].map((_, i) =>
+                              i < v.rating ? <FaStar key={i} /> : <FaRegStar key={i} />
+                            )}
+                          </div>
+                          • {v.star} {v.star === 1 ? 'star' : 'stars'}
+                        </span>
+                      )}
+                    </div>
+
+                    <span className=' text-lg text-[#404040] mt-1'>{v.review1}</span>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+        <hr className='border-[1px] w-full my-7' />
+
+        <div className='w-full flex flex-col items-center'>
+          <div className="overflow-hidden rounded-2xl shadow-lg">
+
+            <div className="overflow-hidden rounded-2xl shadow-lg">
+              <GoogleMap
+                mapContainerStyle={containerStyle}
+                center={center}
+                zoom={12}
+                onLoad={handleLoad}
+              >
+                {
+                  property && center && (
+                    <InfoWindow position={center}>
+                      <div className="w-[220px] p-3 rounded-2xl shadow-lg bg-white text-gray-800">
+                        <img
+                          src={property?.imagesNavigation[0]?.imageUrl}
+                          alt={property?.propertyName}
+                          className="w-full h-[100px] object-cover rounded-2xl mb-2"
+                        />
+                        <h2 className="text-lg font-semibold truncate">{property?.propertyName}</h2>
+                        <p className="text-sm text-gray-600">Your Location</p>
+                      </div>
+                    </InfoWindow>
+                  )
+                }
+
+
+              </GoogleMap>
+            </div>
+
+          </div>
+        </div>
+
+
       </div>
 
       {/* Photo Gallery Modal */}

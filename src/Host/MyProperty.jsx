@@ -648,18 +648,18 @@ const MyProperty = () => {
               );
             })}
           </Grid> */}
-            <FormGroup row>
+            <FormGroup >
               {amenities.map((amenity) => (
                 <FormControlLabel
-                  key={amenity.id}
+                  key={amenity?.id}
                   control={
                     <Checkbox
-                      checked={selected.includes(amenity.id)}
+                      checked={selected.includes(amenity?.id)}
                       onChange={() => {
                         setSelected((prev) =>
-                          prev.includes(amenity.id)
-                            ? prev.filter((id) => id !== amenity.id)
-                            : [...prev, amenity.id]
+                          prev.includes(amenity?.id)
+                            ? prev.filter((id) => id !== amenity?.id)
+                            : [...prev, amenity?.id]
                         );
                       }}
                     />

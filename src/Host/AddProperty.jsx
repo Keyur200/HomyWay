@@ -168,8 +168,8 @@ export default function AddProperty() {
 
   // When clicking anywhere on map
   const handleMapClick = (e) => {
-    const lat = e.latLng.lat();
-    const lng = e.latLng.lng();
+    const lat = parseFloat(e.latLng.lat().toFixed(4));
+    const lng = parseFloat(e.latLng.lng().toFixed(4));
 
     setLatitude(lat);
     setLongitude(lng);
@@ -193,7 +193,6 @@ export default function AddProperty() {
       prev.includes(label) ? prev.filter((item) => item !== label) : [...prev, label]
     );
 
-    console.log(selected)
   };
   const StepContent = (
     <>
@@ -412,7 +411,6 @@ export default function AddProperty() {
 
       {activeStep === 2 && (
         <div>
-          <LoadScript googleMapsApiKey={""}>
             <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={5} onClick={handleMapClick}>
 
               {clickedPosition && !selectedMarker && (
@@ -425,7 +423,6 @@ export default function AddProperty() {
                 </InfoWindow>
               )}
             </GoogleMap>
-          </LoadScript>
         </div>
       )}
 
@@ -435,28 +432,22 @@ export default function AddProperty() {
             Amentites
           </Typography>
           <Typography variant="body2" color="text.secondary" gutterBottom>
-            Select amenities for your place
+            What about these guest favourites?
           </Typography>
           <Grid container spacing={2}>
-            {amenities?.map((amn) => {
+            {amenities?.slice(0, amenities.length - 4).map((amn) => {
               const isSelected = selected.includes(amn?.id);
               return (
-                <Grid item xs={12} sm={6} md={3} key={amn?.id} size={3}>
+                <Grid item xs={12} sm={6} md={3} key={amn?.id}>
                   <Card
                     sx={{
-                      border: isSelected ? '2px solid #f43f5e' : '2px solid #ddd',
+                      border: isSelected ? '3px solid #f43f5e' : '3px solid #ddd',
                       backgroundColor: isSelected ? '#fff0f3' : '#fff',
                       borderRadius: 2,
                     }}
                   >
                     <CardActionArea onClick={() => toggleAmenity(amn?.id)} sx={{ p: 2 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {isSelected ? (
-                          <CheckBox sx={{ color: '#f43f5e' }} />
-                        ) : (
-                          <CheckBoxOutlineBlank sx={{ color: 'black' }} />
-                        )}
-                        {/* {icon} */}
                         <Typography variant="body1" fontWeight={500} sx={{ color: 'black' }}>
                           {amn?.name}
                         </Typography>
@@ -467,6 +458,35 @@ export default function AddProperty() {
               );
             })}
           </Grid>
+            <Typography variant="body2" color="text.secondary" gutterBottom sx={{mt:3}}>
+              Do you have any of these safety items?
+            </Typography>
+          <Grid container spacing={2}>
+
+            {amenities?.slice(-4).map((amn) => {
+              const isSelected = selected.includes(amn?.id);
+              return (
+                <Grid item xs={12} sm={6} md={3} key={amn?.id}>
+                  <Card
+                    sx={{
+                      border: isSelected ? '3px solid #f43f5e' : '3px solid #ddd',
+                      backgroundColor: isSelected ? '#fff0f3' : '#fff',
+                      borderRadius: 2,
+                    }}
+                  >
+                    <CardActionArea onClick={() => toggleAmenity(amn?.id)} sx={{ p: 2 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography variant="body1" fontWeight={500} sx={{ color: 'black' }}>
+                          {amn?.name}
+                        </Typography>
+                      </Box>
+                    </CardActionArea>
+                  </Card>
+                </Grid>
+              );
+            })}
+          </Grid>
+
         </Box>
       )}
     </>
