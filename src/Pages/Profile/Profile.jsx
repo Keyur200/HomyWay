@@ -28,6 +28,9 @@ import { api } from "../../api";
 import { AuthContext } from "../../Context/AuthProvider";
 import MyBookings from "./MyBookings";
 import MyWishlist from "./MyWishlist";
+import { Link } from "react-router-dom";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import HomeIcon from "@mui/icons-material/Home";
 
 const NAVIGATION = [
   { kind: "header", title: "Main items" },
@@ -40,6 +43,24 @@ const NAVIGATION = [
 const demoTheme = createTheme({
   colorSchemes: { light: true, dark: true },
   cssVariables: { colorSchemeSelector: "class" },
+  components: {
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          "& .MuiToolbar-root": {
+            "& .MuiBox-root": {
+              "& .home-button": {
+                color: "white",
+                "&:hover": {
+                  color: "#b91c1c"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   breakpoints: {
     values: {
       xs: 0,
@@ -316,7 +337,38 @@ export default function Profile(props) {
       theme={demoTheme}
       window={demoWindow}
     >
-      <DashboardLayout>{renderContent()}</DashboardLayout>
+      <Box sx={{ position: 'relative' }}>
+        <Box 
+          sx={{ 
+            position: 'fixed',
+            top: 10,
+            right: 80,
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            width: '15px',
+          }}
+        >
+          <Link to="/">
+            <IconButton 
+              className="home-button"
+              size="large"
+              sx={{
+                backgroundColor: 'rgba(0,0,0,0.2)',
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: 'rgba(185,28,28,0.9)',
+                  color: 'white'
+                }
+              }}
+            >
+              <HomeIcon fontSize="small" />
+            </IconButton>
+          </Link>
+        </Box>
+        <DashboardLayout>{renderContent()}</DashboardLayout>
+      </Box>
     </AppProvider>
   );
 }

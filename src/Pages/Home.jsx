@@ -40,8 +40,6 @@ const Home = () => {
     getMyPropertyVilla();
   }, []);
 
-
-
   const NextArrow = (props) => {
     const { onClick } = props;
     return (
@@ -50,11 +48,28 @@ const Home = () => {
         sx={{
           position: "absolute",
           top: "45%",
-          right: 10,
+          right: -20,
           zIndex: 2,
-          backgroundColor: "white",
-          boxShadow: 2,
-          "&:hover": { backgroundColor: "#f0f0f0" },
+          backgroundColor: "transparent",
+          boxShadow: "none",
+          opacity: 0,
+          transform: "translateX(20px)",
+          transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+          ".slick-slider:hover &": {
+            opacity: 1,
+            transform: "translateX(-20px)",
+          },
+          "&:hover": { 
+            backgroundColor: "transparent",
+            "& .MuiSvgIcon-root": {
+              transform: "scale(1.2)",
+            }
+          },
+          "& .MuiSvgIcon-root": {
+            color: "#000",
+            fontSize: "24px",
+            transition: "transform 0.3s ease"
+          }
         }}
       >
         <ArrowForwardIosIcon />
@@ -70,11 +85,28 @@ const Home = () => {
         sx={{
           position: "absolute",
           top: "45%",
-          left: 10,
+          left: -20,
           zIndex: 2,
-          backgroundColor: "white",
-          boxShadow: 2,
-          "&:hover": { backgroundColor: "#f0f0f0" },
+          backgroundColor: "transparent",
+          boxShadow: "none",
+          opacity: 0,
+          transform: "translateX(-20px)",
+          transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+          ".slick-slider:hover &": {
+            opacity: 1,
+            transform: "translateX(20px)",
+          },
+          "&:hover": { 
+            backgroundColor: "transparent",
+            "& .MuiSvgIcon-root": {
+              transform: "scale(1.2)",
+            }
+          },
+          "& .MuiSvgIcon-root": {
+            color: "#000",
+            fontSize: "24px",
+            transition: "transform 0.3s ease"
+          }
         }}
       >
         <ArrowBackIosIcon />
@@ -120,7 +152,6 @@ const Home = () => {
     }
   };
 
-
   const [wishlist, setWishlist] = useState([]);
 
   const fetchWishlist = async () => {
@@ -133,8 +164,6 @@ const Home = () => {
   useEffect(() => {
     fetchWishlist();
   }, [user?.id]);
-
-
 
   return (
     <Box>

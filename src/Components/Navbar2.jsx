@@ -17,7 +17,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
 import Typography from "@mui/material/Typography";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import homywayLogo from "../assets/images/homywayLogo.png";
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
@@ -41,6 +41,7 @@ function Navbar2() {
   const [open, setOpen] = React.useState(false);
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const location = useLocation();
 
   const { user, loggedIn, logOut } = React.useContext(AuthContext);
 
@@ -90,15 +91,16 @@ function Navbar2() {
             }}
           >
             <Button
-             component={Link}
+              component={Link}
               to="/villa"
               variant="text"
               size="small"
               sx={{
                 textTransform: "capitalize",
-                color: "#fff",
+                color: location.pathname === "/villa" ? "#b91c1c" : "#fff",
+                fontWeight: location.pathname === "/villa" ? 600 : 400,
                 "&:hover": {
-                  color: "#1976d2",
+                  color: "#b91c1c",
                 },
               }}
             >
@@ -112,35 +114,42 @@ function Navbar2() {
               size="small"
               sx={{
                 textTransform: "capitalize",
-                color: "#fff",
+                color: location.pathname === "/farmhouse" ? "#b91c1c" : "#fff",
+                fontWeight: location.pathname === "/farmhouse" ? 600 : 400,
                 "&:hover": {
-                  color: "#1976d2",
+                  color: "#b91c1c",
                 },
               }}
             >
               Farm House
             </Button>
             <Button
+              component={Link}
+              to="/hotel"
               variant="text"
               size="small"
               sx={{
                 textTransform: "capitalize",
-                color: "#fff",
+                color: location.pathname === "/hotel" ? "#b91c1c" : "#fff",
+                fontWeight: location.pathname === "/hotel" ? 600 : 400,
                 "&:hover": {
-                  color: "#1976d2",
+                  color: "#b91c1c",
                 },
               }}
             >
               Hotel
             </Button>
             <Button
+              component={Link}
+              to="/about"
               variant="text"
               size="small"
               sx={{
                 textTransform: "capitalize",
-                color: "#fff",
+                color: location.pathname === "/about" ? "#b91c1c" : "#fff",
+                fontWeight: location.pathname === "/about" ? 600 : 400,
                 "&:hover": {
-                  color: "#1976d2",
+                  color: "#b91c1c",
                 },
               }}
             >
@@ -155,7 +164,7 @@ function Navbar2() {
                 <Tooltip title="Account settings">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                     <Avatar
-                      sx={{ backgroundColor: "#0288d1" }}
+                      sx={{ backgroundColor: "#b91c1c" }}
                       alt={user?.name}
                       src={user?.avatarUrl || "/static/images/avatar/1.jpg"}
                     />
@@ -173,10 +182,22 @@ function Navbar2() {
                     onClick={handleCloseUserMenu}
                     component={Link}
                     to="/profile"
+                    sx={{
+                      "&:hover": {
+                        color: "#b91c1c",
+                      },
+                    }}
                   >
                     <Typography textAlign="center">Profile</Typography>
                   </MenuItem>
-                  <MenuItem onClick={handleCloseUserMenu}>
+                  <MenuItem 
+                    onClick={handleCloseUserMenu}
+                    sx={{
+                      "&:hover": {
+                        color: "#b91c1c",
+                      },
+                    }}
+                  >
                     <Typography onClick={logOut} textAlign="center">
                       Logout
                     </Typography>
@@ -187,16 +208,30 @@ function Navbar2() {
               <Button
                 component={Link}
                 to="/login"
-                color="primary"
                 variant="contained"
                 size="small"
+                sx={{
+                  backgroundColor: "#b91c1c",
+                  "&:hover": {
+                    backgroundColor: "#991b1b",
+                  },
+                }}
               >
                 Login
               </Button>
             )}
             <Box sx={{ display: { xs: "flex", md: "none" } }}>
-              <ColorModeIconDropdown size="medium" />
-              <IconButton aria-label="Menu button" onClick={toggleDrawer(true)}>
+              {/* <ColorModeIconDropdown size="medium" /> */}
+              <IconButton 
+                aria-label="Menu button" 
+                onClick={toggleDrawer(true)}
+                sx={{
+                  color: "#fff",
+                  "&:hover": {
+                    color: "#b91c1c",
+                  },
+                }}
+              >
                 <MenuIcon />
               </IconButton>
               <Drawer
@@ -211,19 +246,73 @@ function Navbar2() {
               >
                 <Box sx={{ p: 2, backgroundColor: "background.default" }}>
                   <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <IconButton onClick={toggleDrawer(false)}>
+                    <IconButton 
+                      onClick={toggleDrawer(false)}
+                      sx={{
+                        "&:hover": {
+                          color: "#b91c1c",
+                        },
+                      }}
+                    >
                       <CloseRoundedIcon />
                     </IconButton>
                   </Box>
-                  <MenuItem>Features</MenuItem>
-                  <MenuItem>Testimonials</MenuItem>
-                  <MenuItem>Highlights</MenuItem>
-                  <MenuItem>Pricing</MenuItem>
-                  <MenuItem>FAQ</MenuItem>
-                  <MenuItem>Blog</MenuItem>
+                  <MenuItem 
+                    component={Link}
+                    to="/villa"
+                    sx={{ 
+                      color: location.pathname === "/villa" ? "#b91c1c" : "inherit",
+                      fontWeight: location.pathname === "/villa" ? 600 : 400,
+                      "&:hover": { color: "#b91c1c" } 
+                    }}
+                  >
+                    Villa
+                  </MenuItem>
+                  <MenuItem 
+                    component={Link}
+                    to="/farmhouse"
+                    sx={{ 
+                      color: location.pathname === "/farmhouse" ? "#b91c1c" : "inherit",
+                      fontWeight: location.pathname === "/farmhouse" ? 600 : 400,
+                      "&:hover": { color: "#b91c1c" } 
+                    }}
+                  >
+                    Farm House
+                  </MenuItem>
+                  <MenuItem 
+                    component={Link}
+                    to="/hotel"
+                    sx={{ 
+                      color: location.pathname === "/hotel" ? "#b91c1c" : "inherit",
+                      fontWeight: location.pathname === "/hotel" ? 600 : 400,
+                      "&:hover": { color: "#b91c1c" } 
+                    }}
+                  >
+                    Hotel
+                  </MenuItem>
+                  <MenuItem 
+                    component={Link}
+                    to="/about"
+                    sx={{ 
+                      color: location.pathname === "/about" ? "#b91c1c" : "inherit",
+                      fontWeight: location.pathname === "/about" ? 600 : 400,
+                      "&:hover": { color: "#b91c1c" } 
+                    }}
+                  >
+                    About Us
+                  </MenuItem>
                   <Divider sx={{ my: 3 }} />
                   <MenuItem>
-                    <Button color="primary" variant="contained" fullWidth>
+                    <Button 
+                      variant="contained" 
+                      fullWidth
+                      sx={{
+                        backgroundColor: "#b91c1c",
+                        "&:hover": {
+                          backgroundColor: "#991b1b",
+                        },
+                      }}
+                    >
                       Sign in
                     </Button>
                   </MenuItem>

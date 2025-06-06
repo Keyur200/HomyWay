@@ -49,9 +49,17 @@ const MyWishlist = () => {
               top: "45%",
               right: 10,
               zIndex: 2,
-              backgroundColor: "white",
-              boxShadow: 2,
-              "&:hover": { backgroundColor: "#f0f0f0" },
+              backgroundColor: "transparent",
+              color: "#000",
+              opacity: 0,
+              transition: "opacity 0.3s ease",
+              ".slick-slider:hover &": {
+                opacity: 1,
+              },
+              "&:hover": { 
+                backgroundColor: "transparent",
+                transform: "scale(1.1)",
+              },
             }}
           >
             <ArrowForwardIosIcon />
@@ -69,9 +77,17 @@ const MyWishlist = () => {
               top: "45%",
               left: 10,
               zIndex: 2,
-              backgroundColor: "white",
-              boxShadow: 2,
-              "&:hover": { backgroundColor: "#f0f0f0" },
+              backgroundColor: "transparent",
+              color: "#000",
+              opacity: 0,
+              transition: "opacity 0.3s ease",
+              ".slick-slider:hover &": {
+                opacity: 1,
+              },
+              "&:hover": { 
+                backgroundColor: "transparent",
+                transform: "scale(1.1)",
+              },
             }}
           >
             <ArrowBackIosIcon />
