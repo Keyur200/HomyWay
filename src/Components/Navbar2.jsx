@@ -63,20 +63,21 @@ function Navbar2() {
     >
       <Container maxWidth="lg">
         <StyledToolbar variant="dense" disableGutters sx={{
-        background: "rgb(54 54 54 / 40%)"}}>
+          background: "rgb(54 54 54 / 40%)"
+        }}>
           {/* Left: Logo */}
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Link to="/">
-              <img 
-                src={homywayLogo} 
-                alt="HomyWay Logo" 
-                style={{ 
+              <img
+                src={homywayLogo}
+                alt="HomyWay Logo"
+                style={{
                   height: "40px",
                   width: "auto",
                 }}
               />
             </Link>
-           
+
           </Box>
 
           {/* Center: Menu Items */}
@@ -92,7 +93,7 @@ function Navbar2() {
           >
             <Button
               component={Link}
-              to="/villa"
+              to={'/villa'}
               variant="text"
               size="small"
               sx={{
@@ -178,19 +179,55 @@ function Navbar2() {
                   anchorOrigin={{ vertical: "top", horizontal: "right" }}
                   transformOrigin={{ vertical: "top", horizontal: "right" }}
                 >
+                  {
+                    user?.gid === 1 && (
+                      <MenuItem
+                        onClick={handleCloseUserMenu}
+                        component={Link}
+                        to="/admin/dashboard"
+                        sx={{
+                          "&:hover": {
+                            color: "#b91c1c",
+                          },
+                        }}
+                      >
+                        <Typography textAlign="center">Profile</Typography>
+                      </MenuItem>
+                    )
+                  }
+                  {
+                    user?.gid === 2 && (
+                      <MenuItem
+                        onClick={handleCloseUserMenu}
+                        component={Link}
+                        to="/host/dashboard"
+                        sx={{
+                          "&:hover": {
+                            color: "#b91c1c",
+                          },
+                        }}
+                      >
+                        <Typography textAlign="center">Profile</Typography>
+                      </MenuItem>
+                    )
+                  }
+                  {
+                    user?.gid === 3 && (
+                      <MenuItem
+                        onClick={handleCloseUserMenu}
+                        component={Link}
+                        to="/profile"
+                        sx={{
+                          "&:hover": {
+                            color: "#b91c1c",
+                          },
+                        }}
+                      >
+                        <Typography textAlign="center">Profile </Typography>
+                      </MenuItem>
+                    )
+                  }
                   <MenuItem
-                    onClick={handleCloseUserMenu}
-                    component={Link}
-                    to="/profile"
-                    sx={{
-                      "&:hover": {
-                        color: "#b91c1c",
-                      },
-                    }}
-                  >
-                    <Typography textAlign="center">Profile</Typography>
-                  </MenuItem>
-                  <MenuItem 
                     onClick={handleCloseUserMenu}
                     sx={{
                       "&:hover": {
@@ -222,8 +259,8 @@ function Navbar2() {
             )}
             <Box sx={{ display: { xs: "flex", md: "none" } }}>
               {/* <ColorModeIconDropdown size="medium" /> */}
-              <IconButton 
-                aria-label="Menu button" 
+              <IconButton
+                aria-label="Menu button"
                 onClick={toggleDrawer(true)}
                 sx={{
                   color: "#fff",
@@ -246,7 +283,7 @@ function Navbar2() {
               >
                 <Box sx={{ p: 2, backgroundColor: "background.default" }}>
                   <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <IconButton 
+                    <IconButton
                       onClick={toggleDrawer(false)}
                       sx={{
                         "&:hover": {
@@ -257,54 +294,54 @@ function Navbar2() {
                       <CloseRoundedIcon />
                     </IconButton>
                   </Box>
-                  <MenuItem 
+                  <MenuItem
                     component={Link}
                     to="/villa"
-                    sx={{ 
+                    sx={{
                       color: location.pathname === "/villa" ? "#b91c1c" : "inherit",
                       fontWeight: location.pathname === "/villa" ? 600 : 400,
-                      "&:hover": { color: "#b91c1c" } 
+                      "&:hover": { color: "#b91c1c" }
                     }}
                   >
                     Villa
                   </MenuItem>
-                  <MenuItem 
+                  <MenuItem
                     component={Link}
                     to="/farmhouse"
-                    sx={{ 
+                    sx={{
                       color: location.pathname === "/farmhouse" ? "#b91c1c" : "inherit",
                       fontWeight: location.pathname === "/farmhouse" ? 600 : 400,
-                      "&:hover": { color: "#b91c1c" } 
+                      "&:hover": { color: "#b91c1c" }
                     }}
                   >
                     Farm House
                   </MenuItem>
-                  <MenuItem 
+                  <MenuItem
                     component={Link}
                     to="/hotel"
-                    sx={{ 
+                    sx={{
                       color: location.pathname === "/hotel" ? "#b91c1c" : "inherit",
                       fontWeight: location.pathname === "/hotel" ? 600 : 400,
-                      "&:hover": { color: "#b91c1c" } 
+                      "&:hover": { color: "#b91c1c" }
                     }}
                   >
                     Hotel
                   </MenuItem>
-                  <MenuItem 
+                  <MenuItem
                     component={Link}
                     to="/about"
-                    sx={{ 
+                    sx={{
                       color: location.pathname === "/about" ? "#b91c1c" : "inherit",
                       fontWeight: location.pathname === "/about" ? 600 : 400,
-                      "&:hover": { color: "#b91c1c" } 
+                      "&:hover": { color: "#b91c1c" }
                     }}
                   >
                     About Us
                   </MenuItem>
                   <Divider sx={{ my: 3 }} />
                   <MenuItem>
-                    <Button 
-                      variant="contained" 
+                    <Button
+                      variant="contained"
                       fullWidth
                       sx={{
                         backgroundColor: "#b91c1c",

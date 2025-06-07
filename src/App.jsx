@@ -20,6 +20,7 @@ import Profile from './Pages/Profile/profile'
 import Booking from './Pages/Booking'
 import { ToastContainer } from 'react-toastify'
 import { GoogleMap, InfoWindow, LoadScript, Marker, StandaloneSearchBox,useJsApiLoader  } from '@react-google-maps/api';
+import HostRoute from './Protected/HostRoute'
 
 function App() {
 
@@ -37,7 +38,7 @@ function App() {
               <Route path='/booking' element={<Booking />} />
               <Route path='/property/:slug' element={<PropertyDetail />} />
               <Route path='/admin/dashboard' element={<AdminRoute><Dashboard /></AdminRoute>} />
-              <Route path='/host/dashboard' element={<HostDashboard />} />
+              <Route path='/host/dashboard' element={<HostRoute><HostDashboard /></HostRoute>} />
             </Routes>
           </AuthProvider>
           <ToastContainer />

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const IP_API = "http://192.168.29.112:5093/api";
+const IP_API = "http://192.168.29.37:5093/api";
 const LOCAL_API = "http://localhost:5093/api";
 
 class ApiService {

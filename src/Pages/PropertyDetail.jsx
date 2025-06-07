@@ -16,7 +16,7 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import dayjs from 'dayjs';
 import { styled } from '@mui/material/styles';
-import { GoogleMap, InfoWindow, LoadScript, Marker, StandaloneSearchBox, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, OverlayView, InfoWindow, LoadScript, Marker, StandaloneSearchBox, useJsApiLoader } from '@react-google-maps/api';
 
 const BlockedDay = styled(PickersDay)(({ theme }) => ({
   backgroundColor: '#b0dcf3',
@@ -640,17 +640,30 @@ const PropertyDetail = () => {
               onLoad={handleLoad}
             >
               {property && center && (
-                <InfoWindow position={center}>
-                  <div className="w-[180px] md:w-[220px] p-2 md:p-3 rounded-xl md:rounded-2xl shadow-lg bg-white text-gray-800">
-                    <img
-                      src={property?.imagesNavigation[0]?.imageUrl}
-                      alt={property?.propertyName}
-                      className="w-full h-[80px] md:h-[100px] object-cover rounded-xl md:rounded-2xl mb-2"
-                    />
-                    <h2 className="text-base md:text-lg font-semibold truncate">{property?.propertyName}</h2>
-                    <p className="text-xs md:text-sm text-gray-600">Your Location</p>
+                <OverlayView
+                  position={center}
+                  mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                >
+                  <div className="transform -translate-x-1/2 -translate-y-full flex flex-col items-center">
+                    {/* Info Box */}
+                    <div className="w-[180px] md:w-[220px] p-2 md:p-3 rounded-xl md:rounded-2xl shadow-lg bg-white text-gray-800">
+                      <img
+                        src={property?.imagesNavigation[0]?.imageUrl}
+                        alt={property?.propertyName}
+                        className="w-full h-[80px] md:h-[100px] object-cover rounded-xl md:rounded-2xl mb-2"
+                      />
+                      <h2 className="text-base md:text-lg font-semibold truncate">
+                        {property?.propertyName}
+                      </h2>
+                      <p className="text-xs md:text-sm text-gray-600">Your Location</p>
+                    </div>
+
+                    {/* Down Arrow */}
+                    <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-white shadow-sm"></div>
                   </div>
-                </InfoWindow>
+                </OverlayView>
+
+
               )}
             </GoogleMap>
           </div>

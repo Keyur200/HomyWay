@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -35,6 +35,7 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../Context/AuthProvider";
 import { toast } from "react-toastify";
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import { GoogleMap, InfoWindow, LoadScript, Marker, StandaloneSearchBox, useJsApiLoader, OverlayView } from '@react-google-maps/api';
 
 // Animations
 const fadeIn = keyframes`
@@ -68,16 +69,29 @@ function Villa() {
   const [propertiesByVilla, setPropertiesByVilla] = React.useState([]);
   const { user } = useContext(AuthContext);
   const [wishlist, setWishlist] = React.useState([]);
-  const [category, setCategory] = React.useState(1);
+  const [category, setCategory] = React.useState(1002);
   const [priceRange, setPriceRange] = React.useState([1000, 20000]);
   const [city, setCity] = React.useState("");
   const [bed, setBed] = React.useState("");
   const [openFilterDialog, setOpenFilterDialog] = React.useState(false);
   const [openMapDialog, setOpenMapDialog] = React.useState(false);
+  const mapContainerStyle = {
+    width: '100%',
+    height: '100vh'
+  };
 
+  const containerStyle = {
+    width: '100%',
+    height: '100%'
+  };
+
+  const center = {
+    lat: 20.5937,
+    lng: 78.9629
+  };
   const getMyPropertyByVilla = async (filters = {}) => {
     try {
-      let queryParams = `category=1`;
+      let queryParams = `category=1002`;
 
       if (filters.maxPrice !== undefined) {
         queryParams += `&maxPrice=${filters.maxPrice}`;
@@ -112,7 +126,7 @@ function Villa() {
         });
 
         if (res?.data?.message) {
-          toast.error(res?.data?.message); 
+          toast.error(res?.data?.message);
         } else {
           toast.success("Added to wishlist");
         }
@@ -187,7 +201,7 @@ function Villa() {
             opacity: 1,
             transform: "translateX(-20px)",
           },
-          "&:hover": { 
+          "&:hover": {
             backgroundColor: "transparent",
             "& .MuiSvgIcon-root": {
               transform: "scale(1.2)",
@@ -224,7 +238,7 @@ function Villa() {
             opacity: 1,
             transform: "translateX(20px)",
           },
-          "&:hover": { 
+          "&:hover": {
             backgroundColor: "transparent",
             "& .MuiSvgIcon-root": {
               transform: "scale(1.2)",
@@ -252,6 +266,32 @@ function Villa() {
     prevArrow: <PrevArrow />,
     dotsClass: "slick-dots",
   };
+
+  useEffect(() => {
+    handleLoad()
+  }, [center])
+
+  const [mapLoaded, setMapLoaded] = useState(false);
+
+  const handleLoad = () => {
+    setMapLoaded(true);
+  };
+
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: ""
+  });
+
+  const [hoveredPropertyId, setHoveredPropertyId] = useState(null);
+
+  useEffect(() => {
+    const hideCloseButtons = () => {
+      const closeButtons = document.querySelectorAll('.gm-ui-hover-effect');
+      closeButtons.forEach(btn => btn.style.display = 'none');
+    };
+    setTimeout(hideCloseButtons, 500); // Delay ensures DOM is mounted
+  });
+
+  if (!isLoaded) return <div>Loading map...</div>;
 
   return (
     <div>
@@ -292,7 +332,7 @@ function Villa() {
 
       {/* Properties + Filters */}
       <Container maxWidth="xl" sx={{ mt: 2, mb: 2, minHeight: "100vh" }}>
-        <Box sx={{ 
+        <Box sx={{
           mb: 2,
           display: 'flex',
           gap: 2
@@ -311,29 +351,8 @@ function Villa() {
           >
             Filters
           </Button>
-
-          {/* Map Button - Only visible on mobile and tablet */}
-          <Button
-            variant="contained"
-            startIcon={<MapIcon />}
-            onClick={handleOpenMapDialog}
-            size="small"
-            sx={{
-              backgroundColor: "#b91c1c",
-              color: "#fff",
-              '&:hover': {
-                backgroundColor: "#2e2e2e"
-              },
-              '& .MuiButton-startIcon': {
-                margin: '0 8px 0 0',
-              },
-              display: { xs: "flex", lg: "none" }  // Show on xs to md, hide on lg and up
-            }}
-          >
-            View Map
-          </Button>
         </Box>
-        
+
         <Box sx={{ display: "flex", gap: 2 }}>
           {/* Property Cards */}
           <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
@@ -356,7 +375,7 @@ function Villa() {
                       }}
                     >
                       <Box sx={{ position: "relative" }}>
-                        <Slider 
+                        <Slider
                           {...sliderSettings}
                           className="slick-slider"
                         >
@@ -375,9 +394,9 @@ function Villa() {
                           ))}
                         </Slider>
                         <IconButton
-                          sx={{ 
-                            position: "absolute", 
-                            top: 8, 
+                          sx={{
+                            position: "absolute",
+                            top: 8,
                             right: 8
                           }}
                           aria-label="add to favorites"
@@ -404,10 +423,10 @@ function Villa() {
                           />
                           <Typography variant="body2">(4)</Typography>
                         </Stack>
-                        <Typography 
-                          variant="body2" 
+                        <Typography
+                          variant="body2"
                           color="rgb(187 187 187)"
-                          sx={{ 
+                          sx={{
                             '& a': {
                               color: 'inherit',
                               textDecoration: 'none',
@@ -455,26 +474,84 @@ function Villa() {
             }}
           >
             <Typography variant="h6" sx={{ mb: 1 }}>
-              Map View Coming Soon
+              Map View 
             </Typography>
-            <Box sx={{ 
-              flex: 1, 
+            <Box sx={{
+              flex: 1,
               backgroundColor: "rgba(255,255,255,0.1)",
-              borderRadius: 2,
+              borderRadius: 4,
               display: "flex",
               alignItems: "center",
               justifyContent: "center"
             }}>
-              <Typography variant="body2" color="rgba(255,255,255,0.7)">
-                Map will be displayed here
-              </Typography>
+              <GoogleMap
+                mapContainerStyle={containerStyle}
+                center={center}
+                zoom={5}
+                onLoad={handleLoad}
+              >
+                {propertiesByVilla?.map((property) => {
+                  const isHovered = hoveredPropertyId === property.propertyId;
+
+                  return (
+                    <div key={property.propertyId}>
+                      {/* Main Price Bubble */}
+                      <OverlayView
+                        position={{
+                          lat: parseFloat(property.latitude),
+                          lng: parseFloat(property.longitude),
+                        }}
+                        mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                      >
+                        <div
+                          className="relative transform -translate-x-1/2 -translate-y-full flex flex-col items-center cursor-pointer"
+                          onMouseEnter={() => setHoveredPropertyId(property.propertyId)}
+                          onMouseLeave={() => setHoveredPropertyId(null)}
+                        >
+                          <div className="bg-[#b91c1c] text-white text-sm font-semibold px-3 py-1 rounded-full shadow-lg z-10 min-w-[60px] text-center">
+                            ₹{property.propertyPrice}
+                          </div>
+                          <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[10px] border-t-[#b91c1c]"></div>
+                        </div>
+                      </OverlayView>
+
+                      {/* Hover OverlayView with Property Details */}
+                      {isHovered && (
+                        <OverlayView
+                          position={{
+                            lat: parseFloat(property.latitude),
+                            lng: parseFloat(property.longitude),
+                          }}
+                          mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                        >
+                          <div
+                            className="absolute top-[-110px] left-[-100px] w-[200px] bg-white border border-gray-300 rounded-xl shadow-xl p-4 text-sm z-50"
+                            onMouseEnter={() => setHoveredPropertyId(property.propertyId)}
+                            onMouseLeave={() => setHoveredPropertyId(null)}
+                          >
+                            <img
+                              src={property?.imagesNavigation[0]?.imageUrl}
+                              alt={property?.propertyName}
+                              className="w-full h-[80px] md:h-[100px] object-cover rounded-xl md:rounded-2xl mb-2"
+                            />
+                            <Link to={`/property/${property?.slugName}`}><h2 className="text-black md:text-lg font-semibold truncate">{property?.propertyName}</h2></Link>
+                            <p className="text-xs md:text-sm text-gray-600">Your Location</p>
+
+                          </div>
+                        </OverlayView>
+                      )
+                      }
+                    </div>
+                  );
+                })}
+              </GoogleMap>
             </Box>
           </Box>
         </Box>
 
         {/* Filter Dialog */}
-        <Dialog 
-          open={openFilterDialog} 
+        <Dialog
+          open={openFilterDialog}
           onClose={handleCloseFilterDialog}
           fullWidth
           maxWidth="sm"
@@ -499,7 +576,7 @@ function Villa() {
                 min={1000}
                 max={20000}
                 step={500}
-                sx={{ 
+                sx={{
                   color: "#b91c1c",
                   '& .MuiSlider-thumb': {
                     borderColor: "#b91c1c",
@@ -515,7 +592,7 @@ function Villa() {
 
               {/* City Dropdown */}
               <FormControl fullWidth sx={{ mt: 3 }} size="small">
-                <InputLabel 
+                <InputLabel
                   id="city-label"
                   sx={{
                     color: "#fff",
@@ -552,7 +629,7 @@ function Villa() {
 
               {/* Bed Dropdown */}
               <FormControl fullWidth sx={{ mt: 3 }} size="small">
-                <InputLabel 
+                <InputLabel
                   id="bed-label"
                   sx={{
                     color: "#fff",
@@ -590,9 +667,9 @@ function Villa() {
             </Box>
           </DialogContent>
           <DialogActions>
-            <Button 
+            <Button
               onClick={handleResetFilters}
-              sx={{ 
+              sx={{
                 color: '#fff',
                 '&:hover': {
                   color: '#b91c1c'
@@ -601,11 +678,11 @@ function Villa() {
             >
               Reset
             </Button>
-            <Button 
+            <Button
               onClick={() => {
                 handleApplyFilters();
                 handleCloseFilterDialog();
-              }} 
+              }}
               variant="contained"
               sx={{
                 backgroundColor: "#b91c1c",
@@ -619,46 +696,6 @@ function Villa() {
           </DialogActions>
         </Dialog>
 
-        {/* Map Dialog - For mobile view */}
-        <Dialog
-          open={openMapDialog}
-          onClose={handleCloseMapDialog}
-          fullScreen
-          PaperProps={{
-            sx: {
-              backgroundColor: '#1e1e1e',
-              color: '#fff'
-            }
-          }}
-        >
-          <DialogTitle sx={{ 
-            display: 'flex', 
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            borderBottom: '1px solid rgba(255,255,255,0.1)'
-          }}>
-            Map View
-            <IconButton 
-              onClick={handleCloseMapDialog}
-              sx={{ color: '#fff' }}
-            >
-              <CloseIcon />
-            </IconButton>
-          </DialogTitle>
-          <DialogContent sx={{ p: 0 }}>
-            <Box sx={{ 
-              height: '100%',
-              backgroundColor: "rgba(255,255,255,0.1)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center"
-            }}>
-              <Typography variant="body2" color="rgba(255,255,255,0.7)">
-                Map will be displayed here
-              </Typography>
-            </Box>
-          </DialogContent>
-        </Dialog>
       </Container>
     </div>
   );

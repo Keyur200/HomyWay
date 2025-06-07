@@ -27,6 +27,8 @@ import EventIcon from "@mui/icons-material/Event";
 import { AuthContext } from "../Context/AuthProvider";
 import { CategoryOutlined, LogoutOutlined, TourOutlined } from "@mui/icons-material";
 import MyProperty from "./MyProperty";
+import MyBookings from "../Pages/Profile/MyBookings";
+import MyWishlist from "../Pages/Profile/MyWishlist";
 import LocationCity from "@mui/icons-material/LocationCity";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import FormatAlignCenter from "@mui/icons-material/FormatAlignCenter";
@@ -73,7 +75,18 @@ export default function Dashboard(props) {
           icon: <FormatAlignCenter />,
         },
       ],
-    }, {
+    },
+    {
+      segment: "mybookings",
+      title: "My Bookings",
+      icon: <DashboardIcon />,
+    },
+    {
+      segment: "mywishlist",
+      title: "My Favourites",
+      icon: <DashboardIcon />,
+    }, 
+    {
       segment: "logout",
       title: "Logout",
       icon: <LogoutOutlined />,
@@ -181,6 +194,10 @@ export default function Dashboard(props) {
         return <AddProperty />;
       case "/property/myproperty":
         return <MyProperty />;
+      case "/mybookings":
+        return <MyBookings />;
+      case "/mywishlist":
+        return <MyWishlist />;
       case "/property/editProperty":
         return <EditProperty />;
       case "/dashboard":

@@ -3,7 +3,7 @@ import '../App.css'
 import React, { useContext, useEffect, useState } from 'react'
 import { api } from "../api"
 import { AuthContext } from "../Context/AuthProvider"
-import { GoogleMap, InfoWindow, LoadScript, Marker, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, InfoWindow, LoadScript, Marker, useJsApiLoader, OverlayView } from '@react-google-maps/api';
 import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material';
 import Slider from 'react-slick';
 import {
@@ -35,7 +35,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-
 } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import TiptapEditor from './TiptapEditor';
@@ -46,11 +45,9 @@ import CloseIcon from '@mui/icons-material/Close';
 
 const steps = ['Basic Info', 'Upload File', 'Location', "Amenities"];
 const containerStyle = {
-  width: '700px',
+  width: '100%',
   height: '500px'
 };
-
-
 
 
 const MyProperty = () => {
@@ -250,8 +247,8 @@ const MyProperty = () => {
   }
 
   const center = {
-    lat: Number(latitude),
-    lng: Number(longitude)
+    lat: parseFloat(latitude),
+    lng: parseFloat(longitude)
   };
 
   const toggleAmenity = (label) => {
@@ -322,10 +319,18 @@ const MyProperty = () => {
     dotsClass: 'slick-dots'
   };
 
-  const StepContent = () => {
+   const [mapLoaded, setMapLoaded] = useState(false);
+  
+    const handleLoad = () => {
+      setMapLoaded(true);
+    };
+  
     const { isLoaded } = useJsApiLoader({
-      googleMapsApiKey: "", // Replace with your actual API key
+      googleMapsApiKey: ""
     });
+  
+
+  const StepContent = () => {
     return (
       <>
         {activeStep === 0 && (
@@ -590,20 +595,24 @@ const MyProperty = () => {
                 mapContainerStyle={containerStyle}
                 center={center}
                 zoom={5}
+                onLoad={handleLoad}
                 onClick={handleMapClick}
               >
                 <Marker key="marker" position={{ lat: parseFloat(latitude), lng: parseFloat(longitude) }} ></Marker>
                 {clickedPosition && (
-                  <InfoWindow
+                  <OverlayView
                     position={clickedPosition}
-                    onCloseClick={() => setClickedPosition(null)}
+                    mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
                   >
-                    <div>
-                      <h4>Clicked Location</h4>
-                      <p>Lat: {clickedPosition.lat.toFixed(6)}</p>
-                      <p>Lng: {clickedPosition.lng.toFixed(6)}</p>
+                    <div className="relative">
+                      <div className="bg-white text-gray-800 shadow-lg p-2 rounded-lg w-[180px] md:w-[220px]">
+                        <p>Latitude: {clickedPosition.lat.toFixed(6)}</p>
+                        <p>Longitude: {clickedPosition.lng.toFixed(6)}</p>
+                      </div>
+                      {/* Down arrow */}
+                      <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white" />
                     </div>
-                  </InfoWindow>
+                  </OverlayView>
                 )}
               </GoogleMap>
             )}
