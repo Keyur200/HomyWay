@@ -17,6 +17,7 @@ import { api } from "../api";
 import { Box, Typography } from "@mui/material";
 import { AuthContext } from "../Context/AuthProvider";
 import Host from "./Host";
+import homywayLogo from "../assets/images/homywayLogo.png";
 import { 
   CategoryOutlined,
   LogoutOutlined, 
@@ -87,7 +88,7 @@ const demoTheme = createTheme({
           }
         }
       }
-    }
+    }   
   },
   breakpoints: {
     values: {
@@ -319,6 +320,13 @@ export default function Dashboard(props) {
       window={demoWindow}
       title="HomyWay"
       titleProps={{ className: "app-title" }}
+      branding={{
+        // logo: {
+        //   src: "https://th.bing.com/th/id/R.2c4f7a51e8edc4878385151b7da3ca20?rik=89pWfK1iCs%2fMjg&riu=http%3a%2f%2fwww.designlike.com%2fwp-content%2fuploads%2f2019%2f01%2flogo-1933884.png&ehk=Ud6Bg98raER11Jr5ilm0FEqUrYQUdxvN90HyWM5SAOk%3d&risl=&pid=ImgRaw&r=0", // ✅ Imported module path
+        //   alt: "HomyWay Logo",
+        // },
+        title: "HomyWay",
+      }}
       
     >
       <DashboardLayout>{renderContent()}</DashboardLayout>

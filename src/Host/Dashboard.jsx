@@ -275,6 +275,13 @@ export default function Dashboard(props) {
       window={demoWindow}
       title="HomyWay"
       titleProps={{ className: "app-title" }}
+      branding={{
+        // logo: {
+        //   src: homywayLogo,
+        //   alt: "HomyWay Logo",
+        // },
+        title: "HomyWay",
+      }}
     >
       <DashboardLayout>{renderContent()}</DashboardLayout>
     </AppProvider>
