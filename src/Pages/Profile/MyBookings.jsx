@@ -102,13 +102,13 @@ const MyBookings = () => {
                             )}
 
                             {difference < 0 && (
-                                <button
-                                    onClick={() => handleOpen(v?.propertyId)}
+                                    <button
+                                        onClick={() => handleOpen(v?.propertyId)}
                                     className="absolute bottom-2 right-2 flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-gradient-to-r from-pink-500 to-yellow-500 text-white text-xs md:text-sm font-semibold rounded-full shadow-lg md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:scale-105 hover:shadow-xl"
-                                >
+                                    >
                                     <FaStar className="text-white text-xs md:text-sm" />
-                                    Add Review
-                                </button>
+                                        Add Review
+                                    </button>
                             )}
                         </div>
                     ))
@@ -129,7 +129,7 @@ const MyBookings = () => {
                                             key={index}
                                             className={`cursor-pointer text-xl md:text-2xl mx-2 md:mx-3 ${
                                                 starValue <= (hover || rating) ? 'text-yellow-400' : 'text-gray-500'
-                                            }`}
+                                                }`}
                                             onClick={() => setRating(starValue)}
                                             onMouseEnter={() => setHover(starValue)}
                                             onMouseLeave={() => setHover(0)}

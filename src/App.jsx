@@ -38,7 +38,7 @@ function App() {
               <Route path='/booking' element={<Booking />} />
               <Route path='/property/:slug' element={<PropertyDetail />} />
               <Route path='/admin/dashboard' element={<AdminRoute><Dashboard /></AdminRoute>} />
-              <Route path='/host/dashboard' element={<HostRoute><HostDashboard /></HostRoute>} />
+              <Route path='/host/dashboard' element={<HostDashboard />} />
             </Routes>
           </AuthProvider>
           <ToastContainer />

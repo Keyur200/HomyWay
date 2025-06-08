@@ -1,16 +1,10 @@
 import * as React from "react";
-import { createTheme, styled } from "@mui/material/styles";
+import { createTheme } from "@mui/material/styles";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import DescriptionIcon from "@mui/icons-material/Description";
-import LayersIcon from "@mui/icons-material/Layers";
 import { AppProvider } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
-import { PageContainer } from "@toolpad/core/PageContainer";
 import Grid from "@mui/material/Grid";
 import Category from "./Category";
-import { Navigate, useNavigate } from "react-router-dom";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -21,14 +15,19 @@ import Paper from "@mui/material/Paper";
 import axios from "axios";
 import { api } from "../api";
 import { Box, Typography } from "@mui/material";
-import PersonIcon from "@mui/icons-material/Person";
-import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
-import MailIcon from "@mui/icons-material/Mail";
-import EventIcon from "@mui/icons-material/Event";
 import { AuthContext } from "../Context/AuthProvider";
 import Host from "./Host";
-import { AddCircleOutline, CategoryOutlined, FormatAlignCenter, FormatListBulleted, LocationCity, LogoutOutlined, TourOutlined } from "@mui/icons-material";
+import { 
+  CategoryOutlined,
+  LogoutOutlined, 
+  SupervisorAccountOutlined,
+  GroupOutlined,
+  VillaOutlined,
+  CurrencyRupee
+} from "@mui/icons-material";
 import User from "./User";
+import Property from "./Property";
+
 const NAVIGATION = [
   {
     kind: "header",
@@ -41,17 +40,22 @@ const NAVIGATION = [
   {
     segment: "category",
     title: "Categories",
-    icon: <ShoppingCartIcon />,
+    icon: <CategoryOutlined />,
+  },
+  {
+    segment: "property",
+    title: "Property",
+    icon: <VillaOutlined />,
   },
   {
     segment: "host",
     title: "Hosts",
-    icon: <TourOutlined />,
+    icon: <SupervisorAccountOutlined />,
   },
-   {
+  {
     segment: "user",
     title: "Users",
-    icon: <PersonIcon />,
+    icon: <GroupOutlined />,
   },
   {
     kind: "divider",
@@ -60,48 +64,30 @@ const NAVIGATION = [
     segment: "logout",
     title: "Logout",
     icon: <LogoutOutlined />,
-  },
-   {
-    segment: "addProperty",
-    title: "Add Property",
-    icon: <AddCircleOutline />,
-  },
-  {
-    kind: "divider",
-  },
-  
-  {
-    segment: "property",
-    title: "Property",
-    icon: <LocationCity />,
-    children: [
-      {
-        segment: "addProperty",
-        title: "Add Property",
-        icon: <AddCircleOutline />,
-      },
-      {
-        segment: "property",
-        title: "property",
-        icon: <FormatAlignCenter />,
-      },
-    ],
-  },
-  {
-    segment: "integrations",
-    title: "Integrations",
-    icon: <LayersIcon />,
-  },
+  }
 ];
-
-
-
-
 
 const demoTheme = createTheme({
   colorSchemes: { light: true, dark: true },
   cssVariables: {
     colorSchemeSelector: "class",
+  },
+  components: {
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          "& .MuiToolbar-root": {
+            "& .MuiTypography-root": {
+              "&.app-title": {
+                fontWeight: 700,
+                fontSize: "1.5rem",
+                color: "#b91c1c"
+              }
+            }
+          }
+        }
+      }
+    }
   },
   breakpoints: {
     values: {
@@ -128,20 +114,8 @@ function useDemoRouter(initialPath) {
   return router;
 }
 
-const Skeleton = styled("div")(({ theme, height }) => ({
-  backgroundColor: theme.palette.action.hover,
-  borderRadius: theme.shape.borderRadius,
-  height,
-  content: '" "',
-}));
-
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
-
 export default function Dashboard(props) {
   const { window } = props;
-  const { user, checkAdmin } = React.useContext(AuthContext);
   const router = useDemoRouter("/dashboard");
   const demoWindow = window ? window() : undefined;
   const [users, setUsers] = React.useState([]);
@@ -202,21 +176,21 @@ export default function Dashboard(props) {
     {
       label: "Total Earnings",
       value: earnings,
-      icon: <EventIcon fontSize="large" sx={{ color: "#ff5252" }} />,
+      icon: <CurrencyRupee fontSize="large" sx={{ color: "#ff5252" }} />,
       bgColor: "#ffebee",
       textColor: "#ff3d00",
     },
     {
       label: "Users",
       value: user2?.length,
-      icon: <PersonIcon fontSize="large" sx={{ color: "#4a00e0" }} />,
+      icon: <GroupOutlined fontSize="large" sx={{ color: "#4a00e0" }} />,
       bgColor: "#eef4ff",
       textColor: "#2962ff",
     },
     {
       label: "Hosts",
       value: host?.length,
-      icon: <BusinessCenterIcon fontSize="large" sx={{ color: "#ff8f00" }} />,
+      icon: <SupervisorAccountOutlined fontSize="large" sx={{ color: "#ff8f00" }} />,
       bgColor: "#fff8e1",
       textColor: "#ff6f00",
     },
@@ -227,7 +201,6 @@ export default function Dashboard(props) {
       bgColor: "#e1f5fe",
       textColor: "#039be5",
     },
-    
   ];
 
   // Component selector based on route
@@ -239,8 +212,8 @@ export default function Dashboard(props) {
         return <Host />;
         case "/user":
           return <User />;
-        case "/addProperty":
-          return <AddProperty />;
+       case "/property":
+        return <Property />;
       case "/dashboard":
       default:
         return (
@@ -344,6 +317,9 @@ export default function Dashboard(props) {
       router={router}
       theme={demoTheme}
       window={demoWindow}
+      title="HomyWay"
+      titleProps={{ className: "app-title" }}
+      
     >
       <DashboardLayout>{renderContent()}</DashboardLayout>
     </AppProvider>

@@ -35,6 +35,12 @@ import FormatAlignCenter from "@mui/icons-material/FormatAlignCenter";
 import AddProperty from "./AddProperty"; // Adjust path if necessary
 import EditProperty from "./EditProperty";
 import BookingPerPropertyChart from "./BookingPerPropertyChart";
+import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
+import VillaIcon from '@mui/icons-material/Villa';
+import BookOnlineIcon from '@mui/icons-material/BookOnline';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import ApartmentIcon from '@mui/icons-material/Apartment';
+import ListAltIcon from '@mui/icons-material/ListAlt';
 
 
 
@@ -57,7 +63,7 @@ export default function Dashboard(props) {
     {
       segment: "property",
       title: "Property",
-      icon: <LocationCity />,
+      icon: <ApartmentIcon />,
       children: [
         {
           segment: "addProperty",
@@ -65,27 +71,22 @@ export default function Dashboard(props) {
           icon: <AddCircleOutline />,
         },
         {
-          segment: "editProperty",
-          title: "Edit Property",
-          icon: <FormatAlignCenter />,
-        },
-        {
           segment: "myproperty",
-          title: "property",
-          icon: <FormatAlignCenter />,
+          title: "My Properties",
+          icon: <ListAltIcon />,
         },
       ],
     },
     {
       segment: "mybookings",
       title: "My Bookings",
-      icon: <DashboardIcon />,
+      icon: <BookOnlineIcon />,
     },
     {
       segment: "mywishlist",
-      title: "My Favourites",
-      icon: <DashboardIcon />,
-    }, 
+      title: "My Favorites",
+      icon: <FavoriteIcon />,
+    },
     {
       segment: "logout",
       title: "Logout",
@@ -131,6 +132,23 @@ export default function Dashboard(props) {
     cssVariables: {
       colorSchemeSelector: "class",
     },
+    components: {
+      MuiAppBar: {
+        styleOverrides: {
+          root: {
+            "& .MuiToolbar-root": {
+              "& .MuiTypography-root": {
+                "&.app-title": {
+                  fontWeight: 700,
+                  fontSize: "1.5rem",
+                  color: "#b91c1c"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     breakpoints: {
       values: {
         xs: 0,
@@ -146,28 +164,28 @@ export default function Dashboard(props) {
     {
       label: "Total Earnings",
       value: earning,
-      icon: <PersonIcon fontSize="large" sx={{ color: "#4a00e0" }} />,
+      icon: <CurrencyRupeeIcon fontSize="large" sx={{ color: "#4a00e0" }} />,
       bgColor: "#eef4ff",
       textColor: "#2962ff",
     },
     {
       label: "My Hosting",
       value: properties?.length,
-      icon: <BusinessCenterIcon fontSize="large" sx={{ color: "#ff8f00" }} />,
+      icon: <VillaIcon fontSize="large" sx={{ color: "#ff8f00" }} />,
       bgColor: "#fff8e1",
       textColor: "#ff6f00",
     },
     {
       label: "Total Booking",
       value: bookings?.length,
-      icon: <CategoryOutlined fontSize="large" sx={{ color: "#00b0ff" }} />,
+      icon: <BookOnlineIcon fontSize="large" sx={{ color: "#00b0ff" }} />,
       bgColor: "#e1f5fe",
       textColor: "#039be5",
     },
     {
-      label: "Events",
-      value: 696,
-      icon: <EventIcon fontSize="large" sx={{ color: "#ff5252" }} />,
+      label: "My Favorites",
+      value: "0",
+      icon: <FavoriteIcon fontSize="large" sx={{ color: "#ff5252" }} />,
       bgColor: "#ffebee",
       textColor: "#ff3d00",
     },
@@ -198,8 +216,7 @@ export default function Dashboard(props) {
         return <MyBookings />;
       case "/mywishlist":
         return <MyWishlist />;
-      case "/property/editProperty":
-        return <EditProperty />;
+      
       case "/dashboard":
       default:
         return (
@@ -256,6 +273,8 @@ export default function Dashboard(props) {
       router={router}
       theme={demoTheme}
       window={demoWindow}
+      title="HomyWay"
+      titleProps={{ className: "app-title" }}
     >
       <DashboardLayout>{renderContent()}</DashboardLayout>
     </AppProvider>

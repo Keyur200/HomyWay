@@ -683,6 +683,19 @@ const MyProperty = () => {
     );
   }
 
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'pending':
+        return '#f59e0b'; // Amber
+      case 'active':
+        return '#10b981'; // Green
+      case 'block':
+        return '#ef4444'; // Red
+      default:
+        return '#6b7280'; // Gray
+    }
+  };
+
   return (
     <Container sx={{ mt: 4 }}>
       <Grid container spacing={3} size={6}>
@@ -704,6 +717,24 @@ const MyProperty = () => {
                     </Box>
                   ))}
                 </Slider>
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 8,
+                    left: 8,
+                    zIndex: 1,
+                    bgcolor: getStatusColor(p?.status),
+                    color: 'white',
+                    px: 1.5,
+                    py: 0.5,
+                    borderRadius: '12px',
+                    fontSize: '0.75rem',
+                    fontWeight: 500,
+                    textTransform: 'capitalize'
+                  }}
+                >
+                  {p?.status}
+                </Box>
                 <IconButton
                   sx={{ position: 'absolute', top: 8, right: 8 }}
                   aria-label="add to favorites"

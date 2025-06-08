@@ -16,7 +16,7 @@ const HostRoute = ({ children }) => {
   if (!loggedIn || !user) {
     return <div>Loading...</div>; 
   }
-
+  
   return user.gid === 1 ? children : null;
 };
 

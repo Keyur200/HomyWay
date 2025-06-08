@@ -105,7 +105,7 @@ const Booking = () => {
         },
         prefill: {
           name: bookingInfo.name,
-          contact: 8141451738,
+          contact: 9824873685,
           email: "test@example.com" // Test email
         },
         notes: {

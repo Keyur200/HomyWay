@@ -55,6 +55,13 @@ const demoTheme = createTheme({
                   color: "#b91c1c"
                 }
               }
+            },
+            "& .MuiTypography-root": {
+              "&.app-title": {
+                fontWeight: 700,
+                fontSize: "1.5rem",
+                color: "#b91c1c"
+              }
             }
           }
         }
@@ -336,6 +343,8 @@ export default function Profile(props) {
       router={router}
       theme={demoTheme}
       window={demoWindow}
+      title="HomyWay"
+      titleProps={{ className: "app-title" }}
     >
       <Box sx={{ position: 'relative' }}>
         <Box 

@@ -93,7 +93,7 @@ function FarmHouse() {
 
   const getMyPropertyByFarmhouse = async (filters = {}) => {
     try {
-      let queryParams = `category=2`;
+      let queryParams = `category=3`;
 
       if (filters.maxPrice !== undefined) {
         queryParams += `&maxPrice=${filters.maxPrice}`;
@@ -409,7 +409,7 @@ function FarmHouse() {
                           {wishlist?.some(item => item.propertyId === p?.propertyId) ? (
                             <FavoriteIcon sx={{ color: 'red' }} />
                           ) : (
-                            <FavoriteBorderIcon />
+                          <FavoriteBorderIcon />
                           )}
                         </IconButton>
                       </Box>
@@ -682,25 +682,25 @@ function FarmHouse() {
           >
             Reset
           </Button>
-          <Button
+              <Button
             onClick={() => {
               handleApplyFilters();
               handleCloseFilterDialog();
             }}
-            variant="contained"
+                variant="contained"
             sx={{
               backgroundColor: "#b91c1c",
               '&:hover': {
                 backgroundColor: "#991b1b"
               }
             }}
-          >
-            Apply
-          </Button>
+              >
+                Apply
+              </Button>
         </DialogActions>
       </Dialog>
 
-    </Container>
+      </Container>
     </div >
   );
 }

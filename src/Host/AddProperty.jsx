@@ -21,7 +21,11 @@ import {
   InputLabel,
   styled,
   Card,
-  CardActionArea
+  CardActionArea,
+  Snackbar,
+  Alert,
+  CircularProgress,
+  Backdrop
 } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import TiptapEditor from './TiptapEditor';
@@ -45,6 +49,12 @@ const center = {
 
 export default function AddProperty() {
   const [activeStep, setActiveStep] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -128,7 +138,22 @@ export default function AddProperty() {
     getAllAmenities()
   }, [])
 
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({ ...prev, open: false }));
+  };
+
   const handleUpload = async () => {
+    if (!name || !description || !address || !city || !state || !country || !guests || 
+        !bedroom || !bed || !bathroom || !price || !cid || !files.length) {
+      setSnackbar({
+        open: true,
+        message: 'Please fill in all required fields and upload at least one image',
+        severity: 'error'
+      });
+      return;
+    }
+
+    setLoading(true);
     const formData = new FormData();
     formData.append("hostId", user?.id);
     formData.append("propertyName", name);
@@ -155,11 +180,38 @@ export default function AddProperty() {
       const res = await axios.post(`${api}/Property`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      console.log(res.data);
-      alert("Upload successful!");
+      setSnackbar({
+        open: true,
+        message: 'Property uploaded successfully!',
+        severity: 'success'
+      });
+      // Reset form after successful upload
+      setActiveStep(0);
+      setName('');
+      setDescription('');
+      setAddress('');
+      setCity('');
+      setState('');
+      setCountry('');
+      setGuests('');
+      setBedroom('');
+      setBed('');
+      setBathroom('');
+      setPrice('');
+      setFiles([]);
+      setcid(0);
+      setLatitude(null);
+      setLongitude(null);
+      setSelected([]);
     } catch (err) {
       console.error(err);
-      alert("Upload failed!");
+      setSnackbar({
+        open: true,
+        message: err.response?.data?.message || 'Failed to upload property. Please try again.',
+        severity: 'error'
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -506,26 +558,48 @@ export default function AddProperty() {
       <Box sx={{ mt: 4, mb: 4 }}>
         {StepContent}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
-          <Button disabled={activeStep === 0} onClick={handleBack}>
+          <Button disabled={activeStep === 0 || loading} onClick={handleBack}>
             Back
           </Button>
           {
             activeStep !== steps.length - 1 && (
-              <Button variant="contained" onClick={handleNext}>
+              <Button variant="contained" onClick={handleNext} disabled={loading}>
                 Next
               </Button>
             )
           }
           {
             activeStep === steps.length - 1 && (
-              <Button variant="contained" onClick={handleUpload}>
-                Submit
+              <Button 
+                variant="contained" 
+                onClick={handleUpload} 
+                disabled={loading}
+                startIcon={loading ? <CircularProgress size={20} /> : null}
+              >
+                {loading ? 'Uploading...' : 'Submit'}
               </Button>
             )
           }
         </Box>
       </Box>
 
+      <Snackbar 
+        open={snackbar.open} 
+        autoHideDuration={6000} 
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Box>
   );
 }
