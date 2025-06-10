@@ -69,7 +69,7 @@ function Villa() {
   const [propertiesByVilla, setPropertiesByVilla] = React.useState([]);
   const { user } = useContext(AuthContext);
   const [wishlist, setWishlist] = React.useState([]);
-  const [category, setCategory] = React.useState(1002);
+  const [category, setCategory] = React.useState(2);
   const [priceRange, setPriceRange] = React.useState([1000, 20000]);
   const [city, setCity] = React.useState("");
   const [bed, setBed] = React.useState("");
@@ -91,7 +91,7 @@ function Villa() {
   };
   const getMyPropertyByVilla = async (filters = {}) => {
     try {
-      let queryParams = `category=1`;
+      let queryParams = `category=2`;
 
       if (filters.maxPrice !== undefined) {
         queryParams += `&maxPrice=${filters.maxPrice}`;
@@ -357,7 +357,7 @@ function Villa() {
           {/* Property Cards */}
           <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
             <Grid container spacing={2}>
-              {propertiesByVilla?.map((p, index) => {
+              {propertiesByVilla?.filter(p => p?.status === 'active')?.map((p, index) => {
                 const animation = cardAnimations[index % cardAnimations.length];
                 return (
                   <Grid item key={p?.id} xs={12} sm={6} md={4}>
@@ -490,7 +490,7 @@ function Villa() {
                 zoom={5}
                 onLoad={handleLoad}
               >
-                {propertiesByVilla?.map((property) => {
+                {propertiesByVilla?.filter(p => p?.status === 'active')?.map((property) => {
                   const isHovered = hoveredPropertyId === property.propertyId;
 
                   return (
@@ -535,7 +535,8 @@ function Villa() {
                               className="w-full h-[80px] md:h-[100px] object-cover rounded-xl md:rounded-2xl mb-2"
                             />
                             <Link to={`/property/${property?.slugName}`}><h2 className="text-black md:text-lg font-semibold truncate">{property?.propertyName}</h2></Link>
-                            <p className="text-xs md:text-sm text-gray-600">Your Location</p>
+                              <h4 className="text-black md:text-sm font-semibold truncate">{property?.propertyCity} - {property?.propertyState}</h4>
+                            <p className="text-xs md:text-sm text-gray-600">₹ {property?.propertyPrice} / night</p>
 
                           </div>
                         </OverlayView>

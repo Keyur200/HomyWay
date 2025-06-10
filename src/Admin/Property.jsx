@@ -695,12 +695,11 @@ function Property() {
                   Activate
                 </Button>
               )}
-              {(normalizeStatus(selectedProperty.status) === 'active' || 
-                normalizeStatus(selectedProperty.status) === 'pending') && (
+              {(normalizeStatus(selectedProperty.status) === 'active') && (
                 <Button
                   variant="contained"
                   color="error"
-                  onClick={() => handleStatusUpdate(selectedProperty.propertyId, 'block')}
+                  onClick={() => handleStatusUpdate(selectedProperty.propertyId, 'pending')}
                   startIcon={<BlockIcon />}
                   sx={{ 
                     px: 4,
@@ -710,7 +709,7 @@ function Property() {
                     }
                   }}
                 >
-                  Block
+                  Pending
                 </Button>
               )}
             </DialogActions>

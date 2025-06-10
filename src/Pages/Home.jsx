@@ -40,6 +40,22 @@ const Home = () => {
     getMyPropertyVilla();
   }, []);
 
+   const [reviews, setReviews] = useState([])
+    const getAllReviews = async () => {
+      const res = await axios.get(`${api}/Reviews/property/${propertiesByVilla[0]?.propertyId}`)
+      if (res?.data) {
+        setReviews(res?.data)
+      }
+    }
+  
+    const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
+    const avgRating = reviews.length ? totalRating / reviews.length : 0;
+    const roundedRating = Math.floor(avgRating);
+
+    useEffect(()=>{
+      getAllReviews()
+      console.log(reviews)
+    },[])
   const NextArrow = (props) => {
     const { onClick } = props;
     return (
@@ -212,7 +228,7 @@ const Home = () => {
 
         <Container sx={{ mt: 4 }}>
           <Grid container spacing={3} >
-            {propertiesByVilla?.map((p) => (
+            {propertiesByVilla?.filter(p => p?.status === 'active')?.map((p) => (
               <Card
                 key={p?.id}
                 sx={{

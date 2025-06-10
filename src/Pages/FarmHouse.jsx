@@ -69,7 +69,7 @@ function FarmHouse() {
   const [propertiesByFarmHouse, setPropertiesByFarmHouse] = React.useState([]);
   const { user } = useContext(AuthContext);
   const [wishlist, setWishlist] = React.useState([]);
-  const [category, setCategory] = React.useState(2);
+  const [category, setCategory] = React.useState(1002);
   const [priceRange, setPriceRange] = React.useState([1000, 20000]);
   const [city, setCity] = React.useState("");
   const [bed, setBed] = React.useState("");
@@ -93,7 +93,7 @@ function FarmHouse() {
 
   const getMyPropertyByFarmhouse = async (filters = {}) => {
     try {
-      let queryParams = `category=3`;
+      let queryParams = `category=1002`;
 
       if (filters.maxPrice !== undefined) {
         queryParams += `&maxPrice=${filters.maxPrice}`;
@@ -359,7 +359,7 @@ function FarmHouse() {
           {/* Property Cards */}
           <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
             <Grid container spacing={2}>
-              {propertiesByFarmHouse?.map((p, index) => {
+              {propertiesByFarmHouse?.filter(p => p?.status === 'active')?.map((p, index) => {
                 const animation = cardAnimations[index % cardAnimations.length];
                 return (
                   <Grid item key={p?.id} xs={12} sm={6} md={4}>
@@ -494,7 +494,7 @@ function FarmHouse() {
                 zoom={5}
                 onLoad={handleLoad}
               >
-                {propertiesByFarmHouse?.map((property) => {
+                {propertiesByFarmHouse?.filter(p => p?.status === 'active')?.map((property) => {
                   const isHovered = hoveredPropertyId === property.propertyId;
 
                   return (
@@ -539,6 +539,7 @@ function FarmHouse() {
                                 className="w-full h-[80px] md:h-[100px] object-cover rounded-xl md:rounded-2xl mb-2"
                               />
                               <Link to={`/property/${property?.slugName}`}><h2 className="text-black md:text-lg font-semibold truncate">{property?.propertyName}</h2></Link>
+                              <h2 className="text-black md:text-lg font-semibold truncate">{property?.propertyCity} - {property?.propertyAddres}</h2>
                               <p className="text-xs md:text-sm text-gray-600">Your Location</p>
 
                         </div>
