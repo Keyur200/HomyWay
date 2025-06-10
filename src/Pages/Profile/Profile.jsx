@@ -18,7 +18,8 @@ import {
   CardContent,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
-import LayersIcon from "@mui/icons-material/Layers";
+import BookOnlineIcon from "@mui/icons-material/BookOnline";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import EditIcon from "@mui/icons-material/Edit";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import EmailIcon from "@mui/icons-material/Email";
@@ -34,10 +35,9 @@ import HomeIcon from "@mui/icons-material/Home";
 
 const NAVIGATION = [
   { kind: "header", title: "Main items" },
-  { title: "Profile", icon: <PersonIcon /> },
-  { title: "My Bookings", icon: <PersonIcon />,segment: "mybookings" },
-  { title: "My Favourites", icon: <PersonIcon />,segment: "mywishlist" },
-  { segment: "integrations", title: "Integrations", icon: <LayersIcon /> },
+  { title: "Profile", icon: <PersonIcon sx={{ color: "#b91c1c" }} /> },
+  { title: "My Bookings", icon: <BookOnlineIcon sx={{ color: "#b91c1c" }} />, segment: "mybookings" },
+  { title: "My Favourites", icon: <FavoriteIcon sx={{ color: "#b91c1c" }} />, segment: "mywishlist" }
 ];
 
 const demoTheme = createTheme({
@@ -346,10 +346,7 @@ export default function Profile(props) {
       title="HomyWay"
       titleProps={{ className: "app-title" }}
       branding={{
-        // logo: {
-        //   src: "https://th.bing.com/th/id/R.2c4f7a51e8edc4878385151b7da3ca20?rik=89pWfK1iCs%2fMjg&riu=http%3a%2f%2fwww.designlike.com%2fwp-content%2fuploads%2f2019%2f01%2flogo-1933884.png&ehk=Ud6Bg98raER11Jr5ilm0FEqUrYQUdxvN90HyWM5SAOk%3d&risl=&pid=ImgRaw&r=0", // ✅ Imported module path
-        //   alt: "HomyWay Logo",
-        // },
+        logo: <img src='./src/assets/images/homywayLogo.png' alt="HomyWay Logo" />,
         title: "HomyWay",
       }}
     >

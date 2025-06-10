@@ -1,15 +1,9 @@
 import * as React from "react";
-import { createTheme, styled } from "@mui/material/styles";
+import { createTheme } from "@mui/material/styles";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import DescriptionIcon from "@mui/icons-material/Description";
-import LayersIcon from "@mui/icons-material/Layers";
 import { AppProvider } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
-import { PageContainer } from "@toolpad/core/PageContainer";
 import Grid from "@mui/material/Grid";
-import { Navigate, useNavigate } from "react-router-dom";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -19,20 +13,14 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import axios from "axios";
 import { api } from "../api";
-import { Box, Typography, Container } from "@mui/material";
-import PersonIcon from "@mui/icons-material/Person";
-import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
-import MailIcon from "@mui/icons-material/Mail";
-import EventIcon from "@mui/icons-material/Event";
+import { Box, Typography } from "@mui/material";
 import { AuthContext } from "../Context/AuthProvider";
-import { CategoryOutlined, LogoutOutlined, TourOutlined } from "@mui/icons-material";
+import { LogoutOutlined, TrendingUp } from "@mui/icons-material";
 import MyProperty from "./MyProperty";
 import MyBookings from "../Pages/Profile/MyBookings";
 import MyWishlist from "../Pages/Profile/MyWishlist";
-import LocationCity from "@mui/icons-material/LocationCity";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
-import FormatAlignCenter from "@mui/icons-material/FormatAlignCenter";
-import AddProperty from "./AddProperty"; // Adjust path if necessary
+import AddProperty from "./AddProperty";
 import EditProperty from "./EditProperty";
 import BookingPerPropertyChart from "./BookingPerPropertyChart";
 import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
@@ -41,16 +29,35 @@ import BookOnlineIcon from '@mui/icons-material/BookOnline';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 import ListAltIcon from '@mui/icons-material/ListAlt';
+import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 
-
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 export default function Dashboard(props) {
   const { window } = props;
-  const { user, checkAdmin } = React.useContext(AuthContext);
+  const { user } = React.useContext(AuthContext);
   const router = useDemoRouter("/dashboard");
   const demoWindow = window ? window() : undefined;
-  const [users, setUsers] = React.useState([]);
-  const [category, setCategory] = React.useState([]);
+  const [bookings, setBooking] = React.useState([])
+
   const NAVIGATION = [
     {
       kind: "header",
@@ -94,8 +101,6 @@ export default function Dashboard(props) {
     }
   ];
 
-  const [bookings, setBooking] = React.useState([])
-
   const getAllBookings = async () => {
     const res = await axios.get(`${api}/Bookings/host/${user?.id}`)
     if (res?.data) {
@@ -126,6 +131,144 @@ export default function Dashboard(props) {
     }
   }
 
+  const [weeklyEarnings, setWeeklyEarnings] = React.useState([]);
+
+  const getWeeklyEarnings = async () => {
+    try {
+      const today = new Date();
+      const sevenDaysAgo = new Date(today);
+      sevenDaysAgo.setDate(today.getDate() - 6);
+
+      const res = await axios.get(`${api}/Bookings/weekly-host-earnings/${user?.id}`, {
+        params: {
+          startDate: sevenDaysAgo.toISOString().split('T')[0],
+          endDate: today.toISOString().split('T')[0]
+        }
+      });
+
+      if (res?.data) {
+        setWeeklyEarnings(res.data);
+      }
+    } catch (error) {
+      console.error('Error fetching weekly earnings:', error);
+    }
+  };
+
+  React.useEffect(() => {
+    if (user?.id) {
+      getWeeklyEarnings();
+    }
+  }, [user?.id]);
+
+  const chartData = {
+    labels: weeklyEarnings.map(item => {
+      const date = new Date(item.date);
+      return date.toLocaleDateString('en-US', { 
+        weekday: 'short',
+        day: 'numeric'
+      });
+    }),
+    datasets: [
+      {
+        label: 'Your Earnings',
+        data: weeklyEarnings.map(item => item.totalEarnings),
+        fill: true,
+        borderColor: '#b91c1c',
+        backgroundColor: 'rgba(185, 28, 28, 0.1)',
+        tension: 0.4,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        pointBackgroundColor: '#1e1e1e',
+        pointBorderColor: '#b91c1c',
+        pointBorderWidth: 2,
+        borderWidth: 3
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          font: {
+            size: 14,
+            family: "'Roboto', sans-serif"
+          },
+          color: '#ffffff'
+        }
+      },
+      title: {
+        display: true,
+        text: 'Last 7 Days Earnings',
+        font: {
+          size: 16,
+          weight: 'bold',
+          family: "'Roboto', sans-serif"
+        },
+        color: '#ffffff'
+      },
+      tooltip: {
+        backgroundColor: 'rgba(30, 30, 30, 0.9)',
+        titleFont: {
+          size: 14,
+          family: "'Roboto', sans-serif"
+        },
+        bodyFont: {
+          size: 13,
+          family: "'Roboto', sans-serif"
+        },
+        padding: 12,
+        borderColor: '#b91c1c',
+        borderWidth: 1,
+        callbacks: {
+          label: function(context) {
+            return `Earnings: ₹${context.parsed.y.toLocaleString()}`;
+          }
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)',
+          borderColor: 'rgba(255, 255, 255, 0.2)'
+        },
+        ticks: {
+          font: {
+            size: 12,
+            family: "'Roboto', sans-serif"
+          },
+          color: '#ffffff',
+          callback: function(value) {
+            return '₹' + value.toLocaleString();
+          }
+        }
+      },
+      x: {
+        grid: {
+          display: false
+        },
+        ticks: {
+          font: {
+            size: 12,
+            family: "'Roboto', sans-serif"
+          },
+          color: '#ffffff'
+        },
+        border: {
+          color: 'rgba(255, 255, 255, 0.2)'
+        }
+      }
+    },
+    interaction: {
+      intersect: false,
+      mode: 'index',
+    },
+  };
 
   const demoTheme = createTheme({
     colorSchemes: { light: true, dark: true },
@@ -261,6 +404,36 @@ export default function Dashboard(props) {
                 </Grid>
               ))}
             </Grid>
+
+            <Box mt={4} mb={4}>
+              <Paper 
+                elevation={3}
+                sx={{ 
+                  p: 3, 
+                  borderRadius: 3,
+                  backgroundColor: '#1e1e1e',
+                  '& canvas': {
+                    maxHeight: '400px'
+                  }
+                }}
+              >
+                <Box display="flex" alignItems="center" gap={1} mb={2}>
+                  <TrendingUp sx={{ color: '#b91c1c' }} />
+                  <Typography variant="h6" color="white">
+                    Earnings Overview
+                  </Typography>
+                </Box>
+                <Line data={chartData} options={chartOptions} />
+              </Paper>
+            </Box>
+
+            <Typography variant="h4" gutterBottom>My Bookings</Typography>
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 650 }} aria-label="caption table">
+                <caption>My Bookings</caption>
+              </Table>
+            </TableContainer>
+
             <BookingPerPropertyChart />
           </Box>
         );

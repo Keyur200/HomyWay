@@ -82,8 +82,8 @@ const PropertyDetail = () => {
   const year = today.getFullYear();
   const date = today.getDate();
   const currentDate = year + "-" + month + "-" + date;
-  let homywayCharges = property?.propertyPrice * 0.10;
-  let totalPrice = property?.propertyPrice * numberOfdays + 500 + homywayCharges;
+  let homywayCharges = (property?.propertyPrice * numberOfdays) * 0.10;
+  let totalPrice = (property?.propertyPrice * numberOfdays) + 500 + homywayCharges;
 
   const getPropertyBySlug = async () => {
     const res = await axios.get(`${api}/Property/slugName/${slug}`);
@@ -206,7 +206,11 @@ const PropertyDetail = () => {
           address: property?.propertyAddress,
           city: property?.propertyCity,
           price: property?.propertyPrice,
-          image: property?.imagesNavigation?.[0]?.imageUrl
+          image: property?.imagesNavigation?.[0]?.imageUrl,
+          maxGuests: property?.maxGuests,
+          bed: property?.bed,
+          bathroom: property?.bathroom,
+          amenities: property?.amenities
         },
         bookingInfo: {
           checkin,
@@ -485,17 +489,36 @@ const PropertyDetail = () => {
 
                   {/* Guests Input */}
                   <div className="border-t border-[#B0B0B0] p-3">
-                    <p className="text-xs pb-1 font-bold uppercase">Guests</p>
-                    <input
-                      type="number"
-                      value={numberofguests}
-                      onChange={(e) => setnumberofguests(e.target.value)}
-                      min={1}
-                      max={property?.maxGuests}
-                      placeholder="Number of guests"
-                      className="w-full px-3 py-2 text-sm text-gray-800 border border-[#b91c1c] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b91c1c] transition-colors"
-
-                    />
+                    <div className="flex justify-between items-center mb-2">
+                      <div>
+                        <p className="text-xs font-bold uppercase">Guests</p>
+                        <p className="text-xs text-gray-500">Max {property?.maxGuests} guests allowed</p>
+                      </div>
+                      <div className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-full border border-gray-200">
+                        <button
+                          type="button"
+                          className="bg-[#b91c1c] text-white rounded-full w-7 h-7 flex items-center justify-center text-lg font-medium hover:bg-[#a11818] transition-colors disabled:opacity-50 disabled:hover:bg-[#b91c1c]"
+                          onClick={() => setnumberofguests(Math.max(1, numberofguests - 1))}
+                          disabled={numberofguests <= 1}
+                        >
+                          -
+                        </button>
+                        <div className="flex flex-col items-center min-w-[40px]">
+                          <span className="text-lg font-semibold">{numberofguests}</span>
+                          <span className="text-xs text-gray-500">
+                            {numberofguests === 1 ? 'Guest' : 'Guests'}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          className="bg-[#b91c1c] text-white rounded-full w-7 h-7 flex items-center justify-center text-lg font-medium hover:bg-[#a11818] transition-colors disabled:opacity-50 disabled:hover:bg-[#b91c1c]"
+                          onClick={() => setnumberofguests(Math.min(property?.maxGuests || 1, Number(numberofguests) + 1))}
+                          disabled={numberofguests >= (property?.maxGuests || 1)}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Guest Information */}

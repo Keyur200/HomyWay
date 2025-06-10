@@ -21,6 +21,8 @@ import Booking from './Pages/Booking'
 import { ToastContainer } from 'react-toastify'
 import { GoogleMap, InfoWindow, LoadScript, Marker, StandaloneSearchBox,useJsApiLoader  } from '@react-google-maps/api';
 import HostRoute from './Protected/HostRoute'
+import GuestHouse from './Pages/GuestHouse'
+import House from './Pages/House'
 
 function App() {
 
@@ -34,6 +36,8 @@ function App() {
               <Route path='/login' element={<Login />} />
               <Route path='/farmhouse' element={<FarmHouse />} />
               <Route path='/villa' element={<Villa />} />
+              <Route path='/guesthouse' element={<GuestHouse />} />
+              <Route path='/house' element={<House />} />
               <Route path='/profile' element={<Profile />} />
               <Route path='/booking' element={<Booking />} />
               <Route path='/property/:slug' element={<PropertyDetail />} />

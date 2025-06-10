@@ -91,7 +91,7 @@ function Villa() {
   };
   const getMyPropertyByVilla = async (filters = {}) => {
     try {
-      let queryParams = `category=2`;
+      let queryParams = `category=1`;
 
       if (filters.maxPrice !== undefined) {
         queryParams += `&maxPrice=${filters.maxPrice}`;

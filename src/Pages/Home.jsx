@@ -24,6 +24,7 @@ import Navbar2 from "../Components/Navbar2";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../Context/AuthProvider";
 import { toast } from "react-toastify";
+import Footer from "../Components/Footer";
 
 const Home = () => {
   const [propertiesByVilla, setPropertiesByVilla] = useState([]);
@@ -201,6 +202,7 @@ const Home = () => {
           px: 3,
           borderRadius: 3,
           mb: 6,
+          pb: 10,
           boxShadow: "inset 0 0 0 1000px rgba(0,0,0,0.4)",
         }}
       >
@@ -226,85 +228,94 @@ const Home = () => {
         </Typography>
         <Divider sx={{ mb: 3, background: "rgb(187 187 187)" }} />
 
-        <Container sx={{ mt: 4 }}>
+        <Container sx={{ mt: 4, mb: 8 }}>
           <Grid container spacing={3} >
             {propertiesByVilla?.filter(p => p?.status === 'active')?.map((p) => (
-              <Card
-                key={p?.id}
-                sx={{
-                  minWidth: 300,
-                  maxWidth: 300,
-                  borderRadius: 3,
-                  background: "#1e1e1e",
-                  color: "#fff",
-                  position: "relative",
-                }}
-              >
-                <Box sx={{ position: "relative" }}>
-                  <Slider {...sliderSettings}>
-                    {p?.imagesNavigation?.map((img, index) => (
-                      <Box key={index}>
-                        <img
-                          src={img?.imageUrl}
-                          style={{
-                            width: "100%",
-                            height: 200,
-                            objectFit: "cover",
-                          }}
-                          alt={`property-${index}`}
-                        />
-                      </Box>
-                    ))}
-                  </Slider>
-                  <IconButton
-                    sx={{ position: "absolute", top: 8, right: 8 }}
-                    aria-label="add to favorites"
-                    onClick={() => handleWishlist(p?.propertyId)}
-                  >
-                    {wishlist?.some(item => item.propertyId === p?.propertyId) ? (
-                      <FavoriteIcon sx={{ color: 'red' }} />
-                    ) : (
-                      <FavoriteBorderIcon />
-                    )}
-                  </IconButton>
+              <Grid item xs={12} sm={6} md={4} lg={4} key={p?.id}>
+                <Card
+                  sx={{
+                    minWidth: 300,
+                    maxWidth: 300,
+                    borderRadius: 3,
+                    background: "#1e1e1e",
+                    color: "#fff",
+                    position: "relative",
+                    transition: "transform 0.2s ease-in-out",
+                    "&:hover": {
+                      transform: "translateY(-5px)",
+                    },
+                  }}
+                >
+                  <Box sx={{ position: "relative" }}>
+                    <Slider {...sliderSettings}>
+                      {p?.imagesNavigation?.map((img, index) => (
+                        <Box key={index}>
+                          <img
+                            src={img?.imageUrl}
+                            style={{
+                              width: "100%",
+                              height: 200,
+                              objectFit: "cover",
+                            }}
+                            alt={`property-${index}`}
+                          />
+                        </Box>
+                      ))}
+                    </Slider>
+                    <IconButton
+                      sx={{ position: "absolute", top: 8, right: 8 }}
+                      aria-label="add to favorites"
+                      onClick={() => handleWishlist(p?.propertyId)}
+                    >
+                      {wishlist?.some(item => item.propertyId === p?.propertyId) ? (
+                        <FavoriteIcon sx={{ color: 'red' }} />
+                      ) : (
+                        <FavoriteBorderIcon />
+                      )}
+                    </IconButton>
 
-                </Box>
+                  </Box>
 
-                <CardContent>
-                  <Typography variant="body2" fontWeight="bold">
-                    Flat in {p?.propertyCity}
-                  </Typography>
+                  <CardContent>
+                    <Typography variant="body2" fontWeight="bold">
+                      Flat in {p?.propertyCity}
+                    </Typography>
 
-                  <Stack direction="row" alignItems="center" spacing={0.5}>
-                    <Rating
-                      name="read-only"
-                      value={4.25}
-                      precision={0.25}
-                      readOnly
-                      size="small"
-                    />
-                    <Typography variant="body2">(4)</Typography>
-                  </Stack>
+                    <Stack direction="row" alignItems="center" spacing={0.5}>
+                      <Rating
+                        name="read-only"
+                        value={4.25}
+                        precision={0.25}
+                        readOnly
+                        size="small"
+                      />
+                      <Typography variant="body2">(4)</Typography>
+                    </Stack>
 
-                  <Typography variant="body2" color="rgb(187 187 187)">
-                    <Link to={`property/${p?.slugName}`}>{p?.propertyName}</Link>
-                  </Typography>
-                  <Typography variant="body2" color="rgb(187 187 187)">
-                    {p?.bed} beds · {p?.bedRoom} bedrooms
-                  </Typography>
+                    <Typography variant="body2" color="rgb(187 187 187)">
+                      <Link to={`property/${p?.slugName}`}>{p?.propertyName}</Link>
+                    </Typography>
+                    <Typography variant="body2" color="rgb(187 187 187)">
+                      {p?.bed} beds · {p?.bedRoom} bedrooms
+                    </Typography>
 
-                  <Typography variant="body2" sx={{ mt: 1 }}>
-                    <span style={{ fontWeight: "bold" }}>
-                      ₹{p?.propertyPrice}
-                    </span>{" "}
-                    per night
-                  </Typography>
-                </CardContent>
-              </Card>
+                    <Typography variant="body2" sx={{ mt: 1 }}>
+                      <span style={{ fontWeight: "bold" }}>
+                        ₹{p?.propertyPrice}
+                      </span>{" "}
+                      per night
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
             ))}
           </Grid>
         </Container>
       </Container>
+
+      <Box sx={{ mt: 'auto' }}>
+        <Footer />
+      </Box>
     </Box>
   );
 };

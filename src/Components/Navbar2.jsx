@@ -126,35 +126,35 @@ function Navbar2() {
             </Button>
             <Button
               component={Link}
-              to="/hotel"
+              to="/house"
               variant="text"
               size="small"
               sx={{
                 textTransform: "capitalize",
-                color: location.pathname === "/hotel" ? "#b91c1c" : "#fff",
-                fontWeight: location.pathname === "/hotel" ? 600 : 400,
+                color: location.pathname === "/house" ? "#b91c1c" : "#fff",
+                fontWeight: location.pathname === "/house" ? 600 : 400,
                 "&:hover": {
                   color: "#b91c1c",
                 },
               }}
             >
-              Hotel
+              House
             </Button>
             <Button
               component={Link}
-              to="/about"
+              to="/guesthouse"
               variant="text"
               size="small"
               sx={{
                 textTransform: "capitalize",
-                color: location.pathname === "/about" ? "#b91c1c" : "#fff",
-                fontWeight: location.pathname === "/about" ? 600 : 400,
+                color: location.pathname === "/guesthouse" ? "#b91c1c" : "#fff",
+                fontWeight: location.pathname === "/guesthouse" ? 600 : 400,
                 "&:hover": {
                   color: "#b91c1c",
                 },
               }}
             >
-              About Us
+              Guest House
             </Button>
           </Box>
 

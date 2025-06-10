@@ -65,11 +65,11 @@ const fadeInZoom = keyframes`
 
 const cardAnimations = [slideInLeft, slideInRight, slideInUp, fadeInZoom];
 
-function FarmHouse() {
+function GuestHouse() {
   const [propertiesByFarmHouse, setPropertiesByFarmHouse] = React.useState([]);
   const { user } = useContext(AuthContext);
   const [wishlist, setWishlist] = React.useState([]);
-  const [category, setCategory] = React.useState(1002);
+  const [category, setCategory] = React.useState(1003);
   const [priceRange, setPriceRange] = React.useState([1000, 20000]);
   const [city, setCity] = React.useState("");
   const [bed, setBed] = React.useState("");
@@ -93,7 +93,7 @@ function FarmHouse() {
 
   const getMyPropertyByFarmhouse = async (filters = {}) => {
     try {
-      let queryParams = `category=3`;
+      let queryParams = `category=1003`;
 
       if (filters.maxPrice !== undefined) {
         queryParams += `&maxPrice=${filters.maxPrice}`;
@@ -706,4 +706,4 @@ function FarmHouse() {
   );
 }
 
-export default FarmHouse;
+export default GuestHouse;

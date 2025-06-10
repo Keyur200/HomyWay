@@ -563,7 +563,17 @@ export default function AddProperty() {
           </Button>
           {
             activeStep !== steps.length - 1 && (
-              <Button variant="contained" onClick={handleNext} disabled={loading}>
+              <Button 
+                variant="contained" 
+                onClick={handleNext} 
+                disabled={loading}
+                sx={{
+                  backgroundColor: '#b91c1c',
+                  '&:hover': {
+                    backgroundColor: '#991b1b',
+                  },
+                }}
+              >
                 Next
               </Button>
             )
@@ -574,9 +584,22 @@ export default function AddProperty() {
                 variant="contained" 
                 onClick={handleUpload} 
                 disabled={loading}
-                startIcon={loading ? <CircularProgress size={20} /> : null}
+                sx={{
+                  backgroundColor: '#b91c1c',
+                  '&:hover': {
+                    backgroundColor: '#991b1b',
+                  },
+                  minWidth: 100,
+                }}
               >
-                {loading ? 'Uploading...' : 'Submit'}
+                {loading ? (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <CircularProgress size={20} sx={{ color: 'white' }} />
+                    <span>Uploading...</span>
+                  </Box>
+                ) : (
+                  'Submit'
+                )}
               </Button>
             )
           }
@@ -593,13 +616,6 @@ export default function AddProperty() {
           {snackbar.message}
         </Alert>
       </Snackbar>
-
-      <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
     </Box>
   );
 }
