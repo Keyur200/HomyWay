@@ -53,7 +53,7 @@ ChartJS.register(
 
 export default function Dashboard(props) {
   const { window } = props;
-  const { user } = React.useContext(AuthContext);
+  const { user, logOut } = React.useContext(AuthContext);
   const router = useDemoRouter("/dashboard");
   const demoWindow = window ? window() : undefined;
   const [bookings, setBooking] = React.useState([])
@@ -359,7 +359,10 @@ export default function Dashboard(props) {
         return <MyBookings />;
       case "/mywishlist":
         return <MyWishlist />;
-      
+      case "/logout":
+        logOut();               
+        router.push("/login");  
+        return null;
       case "/dashboard":
       default:
         return (

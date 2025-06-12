@@ -24,6 +24,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
+import { LogoutOutlined, TrendingUp } from "@mui/icons-material";
 import axios from "axios";
 import { api } from "../../api";
 import { AuthContext } from "../../Context/AuthProvider";
@@ -37,7 +38,8 @@ const NAVIGATION = [
   { kind: "header", title: "Main items" },
   { title: "Profile", icon: <PersonIcon sx={{ color: "#b91c1c" }} /> },
   { title: "My Bookings", icon: <BookOnlineIcon sx={{ color: "#b91c1c" }} />, segment: "mybookings" },
-  { title: "My Favourites", icon: <FavoriteIcon sx={{ color: "#b91c1c" }} />, segment: "mywishlist" }
+  { title: "My Favourites", icon: <FavoriteIcon sx={{ color: "#b91c1c" }} />, segment: "mywishlist" },
+  { segment: "logout", title: "Logout", icon: <LogoutOutlined />}
 ];
 
 const demoTheme = createTheme({
@@ -93,7 +95,7 @@ export default function Profile(props) {
   const { window } = props;
   const router = useDemoRouter("/profile");
   const demoWindow = window ? window() : undefined;
-  const { user, checkAdmin } = React.useContext(AuthContext);
+  const { user, checkAdmin, logOut } = React.useContext(AuthContext);
 
   const [isEditing, setIsEditing] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -124,7 +126,7 @@ export default function Profile(props) {
         email: formData.email,
         phone: formData.phone
       }).toString();
-      
+
       const response = await axios.patch(`${api}/Auth/updateUser/${user.id}?${queryParams}`);
       return response;
     } catch (error) {
@@ -143,7 +145,7 @@ export default function Profile(props) {
           // Update the local storage with new user data if you're storing it there
           const updatedUser = { ...user, ...formData };
           localStorage.setItem('user', JSON.stringify(updatedUser));
-          
+
           setSnackbar({
             open: true,
             message: "Profile updated successfully!",
@@ -211,122 +213,126 @@ export default function Profile(props) {
   };
 
   const renderContent = () => {
-      switch (router.pathname) {
-          case "/mybookings":
-            return <MyBookings />;
-          case "/mywishlist":
-            return <MyWishlist />;
-          case "/profile":
-          default:
-      
-    return (
-      <Box sx={{ maxWidth: 800, mx: "auto", p: 3 }}>
-        <Card sx={{ position: 'relative', mb: 4 }}>
-          <CardContent>
-            <Box sx={{ 
-              display: 'flex', 
-              alignItems: 'center',
-              mb: 3
-            }}>
-              <Box sx={{ position: 'relative' }}>
-                <Avatar
-                  src={user?.avatarUrl || "/static/images/avatar/1.jpg"}
-                  alt={user?.name}
-                  sx={{
-                    width: 100,
-                    height: 100,
-                    mr: 3
-                  }}
-                />
-              </Box>
-              <Box>
-                <Typography variant="h5" gutterBottom>
-                  {formData.name || "User Profile"}
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Box
-                    sx={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: '50%',
-                      bgcolor: formData.status === 'active' ? 'success.main' : 'grey.500',
-                      mr: 1
-                    }}
-                  />
-                  <Typography variant="body2" color="text.secondary" sx={{ textTransform: 'capitalize' }}>
-                    {formData.status}
-                  </Typography>
+    switch (router.pathname) {
+      case "/mybookings":
+        return <MyBookings />;
+      case "/mywishlist":
+        return <MyWishlist />;
+      case "/logout":
+        logOut();
+        router.push("/login");
+        return null;
+      case "/profile":
+      default:
+
+        return (
+          <Box sx={{ maxWidth: 800, mx: "auto", p: 3 }}>
+            <Card sx={{ position: 'relative', mb: 4 }}>
+              <CardContent>
+                <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  mb: 3
+                }}>
+                  <Box sx={{ position: 'relative' }}>
+                    <Avatar
+                      src={user?.avatarUrl || "/static/images/avatar/1.jpg"}
+                      alt={user?.name}
+                      sx={{
+                        width: 100,
+                        height: 100,
+                        mr: 3
+                      }}
+                    />
+                  </Box>
+                  <Box>
+                    <Typography variant="h5" gutterBottom>
+                      {formData.name || "User Profile"}
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Box
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: '50%',
+                          bgcolor: formData.status === 'active' ? 'success.main' : 'grey.500',
+                          mr: 1
+                        }}
+                      />
+                      <Typography variant="body2" color="text.secondary" sx={{ textTransform: 'capitalize' }}>
+                        {formData.status}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Button
+                    variant={isEditing ? "contained" : "outlined"}
+                    onClick={handleEditToggle}
+                    startIcon={isEditing ? null : <EditIcon />}
+                    disabled={loading}
+                    sx={{ ml: 'auto' }}
+                  >
+                    {loading ? <CircularProgress size={24} /> : isEditing ? "Save" : "Edit"}
+                  </Button>
                 </Box>
-              </Box>
-              <Button
-                variant={isEditing ? "contained" : "outlined"}
-                onClick={handleEditToggle}
-                startIcon={isEditing ? null : <EditIcon />}
-                disabled={loading}
-                sx={{ ml: 'auto' }}
-              >
-                {loading ? <CircularProgress size={24} /> : isEditing ? "Save" : "Edit"}
-              </Button>
-            </Box>
 
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <TextField
-                  label="Name"
-                  name="name"
-                  fullWidth
-                  value={formData.name}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  InputProps={{
-                    startAdornment: <PersonIcon sx={{ mr: 1, color: "text.secondary" }} />,
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="Email"
-                  name="email"
-                  fullWidth
-                  value={formData.email}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  InputProps={{
-                    startAdornment: <EmailIcon sx={{ mr: 1, color: "text.secondary" }} />,
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="Phone Number"
-                  name="phone"
-                  fullWidth
-                  value={formData.phone}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  InputProps={{
-                    startAdornment: <PhoneIcon sx={{ mr: 1, color: "text.secondary" }} />,
-                  }}
-                />
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
+                <Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Name"
+                      name="name"
+                      fullWidth
+                      value={formData.name}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      InputProps={{
+                        startAdornment: <PersonIcon sx={{ mr: 1, color: "text.secondary" }} />,
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Email"
+                      name="email"
+                      fullWidth
+                      value={formData.email}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      InputProps={{
+                        startAdornment: <EmailIcon sx={{ mr: 1, color: "text.secondary" }} />,
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Phone Number"
+                      name="phone"
+                      fullWidth
+                      value={formData.phone}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      InputProps={{
+                        startAdornment: <PhoneIcon sx={{ mr: 1, color: "text.secondary" }} />,
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
 
-        <Snackbar
-          open={snackbar.open}
-          autoHideDuration={6000}
-          onClose={handleCloseSnackbar}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        >
-          <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
-            {snackbar.message}
-          </Alert>
-        </Snackbar>
-      </Box>
-    );
-  };
-}
+            <Snackbar
+              open={snackbar.open}
+              autoHideDuration={6000}
+              onClose={handleCloseSnackbar}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            >
+              <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
+                {snackbar.message}
+              </Alert>
+            </Snackbar>
+          </Box>
+        );
+    };
+  }
 
   // If user data is not loaded yet, show loading state
   if (!user) {
@@ -351,8 +357,8 @@ export default function Profile(props) {
       }}
     >
       <Box sx={{ position: 'relative' }}>
-        <Box 
-          sx={{ 
+        <Box
+          sx={{
             position: 'fixed',
             top: 10,
             right: 80,
@@ -364,7 +370,7 @@ export default function Profile(props) {
           }}
         >
           <Link to="/">
-            <IconButton 
+            <IconButton
               className="home-button"
               size="large"
               sx={{

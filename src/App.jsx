@@ -23,6 +23,7 @@ import { GoogleMap, InfoWindow, LoadScript, Marker, StandaloneSearchBox,useJsApi
 import HostRoute from './Protected/HostRoute'
 import GuestHouse from './Pages/GuestHouse'
 import House from './Pages/House'
+import SignUp from './Pages/SignUp'
 
 function App() {
 
@@ -34,6 +35,7 @@ function App() {
             <Routes>
               <Route path='/' element={<Home />} />
               <Route path='/login' element={<Login />} />
+              <Route path='/signup' element={<SignUp />} />
               <Route path='/farmhouse' element={<FarmHouse />} />
               <Route path='/villa' element={<Villa />} />
               <Route path='/guesthouse' element={<GuestHouse />} />
@@ -42,7 +44,7 @@ function App() {
               <Route path='/booking' element={<Booking />} />
               <Route path='/property/:slug' element={<PropertyDetail />} />
               <Route path='/admin/dashboard' element={<AdminRoute><Dashboard /></AdminRoute>} />
-              <Route path='/host/dashboard' element={<HostDashboard />} />
+              <Route path='/host/dashboard' element={<HostRoute><HostDashboard /></HostRoute>} />
             </Routes>
           </AuthProvider>
           <ToastContainer />

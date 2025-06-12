@@ -21,3 +21,11 @@
   opacity: 1;
 }
 
+.recharts-tooltip-wrapper {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}

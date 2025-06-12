@@ -8,8 +8,8 @@ const AdminRoute = ({ children }) => {
 
   useEffect(() => {
     if (!loggedIn || !user) return;
-    if (user.gid !== 1) {
-      navigate('/admin/dashboard');
+    if (user?.gid !== 1) {
+      navigate('/');
     }
   }, [user, loggedIn, navigate]);
 
@@ -17,7 +17,7 @@ const AdminRoute = ({ children }) => {
     return <div>Loading...</div>; 
   }
 
-  return user.gid === 1 ? children : null;
+  return user?.gid === 1 ? children : null;
 };
 
 export default AdminRoute;

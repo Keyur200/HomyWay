@@ -8,7 +8,7 @@ const HostRoute = ({ children }) => {
 
   useEffect(() => {
     if (!loggedIn || !user) return;
-    if (user.gid !== 2) {
+    if (user?.gid !== 2) {
       navigate('/');
     }
   }, [user, loggedIn, navigate]);
@@ -17,7 +17,7 @@ const HostRoute = ({ children }) => {
     return <div>Loading...</div>; 
   }
   
-  return user.gid === 1 ? children : null;
+  return user?.gid === 2 ? children : null;
 };
 
 export default HostRoute;

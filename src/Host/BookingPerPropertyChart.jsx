@@ -12,7 +12,8 @@ import {
 import axios from 'axios';
 import { api } from '../api';
 import { AuthContext } from '../Context/AuthProvider';
-
+import CustomTooltip from './CustomTooltip';
+import '../App.css'
 
 
 const getBookingCountsByProperty = (bookings) => {
@@ -57,11 +58,30 @@ const BookingPerPropertyChart = () => {
                         <BarChart data={data}>
                             <XAxis dataKey="propertyName" />
                             <YAxis allowDecimals={false} />
-                            <Tooltip />
+                            <Tooltip
+                                content={<CustomTooltip />}
+                                wrapperStyle={{
+                                    backgroundColor: 'transparent',
+                                    border: 'none',
+                                    boxShadow: 'none',
+                                    padding: 0,
+                                    margin: 0,
+                                    outline: 'none',
+                                }}
+                            />
+
                             <Legend />
-                            <Bar dataKey="bookings" fill="#1976d2" />
+                            <Bar
+                                dataKey="bookings"
+                                fill="black"
+                                stroke="red"
+                                style={{ transition: 'none' }}
+                                isAnimationActive={false}
+                            />
+
                         </BarChart>
                     </ResponsiveContainer>
+
                 </CardContent>
             </Card>
         </Container>

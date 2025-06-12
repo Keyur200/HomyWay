@@ -18,9 +18,9 @@ import { Box, Typography } from "@mui/material";
 import { AuthContext } from "../Context/AuthProvider";
 import Host from "./Host";
 import homywayLogo from "../assets/images/homywayLogo.png";
-import { 
+import {
   CategoryOutlined,
-  LogoutOutlined, 
+  LogoutOutlined,
   SupervisorAccountOutlined,
   GroupOutlined,
   VillaOutlined,
@@ -40,6 +40,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import { useNavigate } from "react-router-dom";
 
 ChartJS.register(
   CategoryScale,
@@ -50,45 +51,6 @@ ChartJS.register(
   Tooltip,
   Legend
 );
-
-const NAVIGATION = [
-  {
-    kind: "header",
-    title: "Main items",
-  },
-  {
-    title: "Dashboard",
-    icon: <DashboardIcon />,
-  },
-  {
-    segment: "category",
-    title: "Categories",
-    icon: <CategoryOutlined />,
-  },
-  {
-    segment: "property",
-    title: "Property",
-    icon: <VillaOutlined />,
-  },
-  {
-    segment: "host",
-    title: "Hosts",
-    icon: <SupervisorAccountOutlined />,
-  },
-  {
-    segment: "user",
-    title: "Users",
-    icon: <GroupOutlined />,
-  },
-  {
-    kind: "divider",
-  },
-  {
-    segment: "logout",
-    title: "Logout",
-    icon: <LogoutOutlined />,
-  }
-];
 
 const demoTheme = createTheme({
   colorSchemes: { light: true, dark: true },
@@ -110,7 +72,7 @@ const demoTheme = createTheme({
           }
         }
       }
-    }   
+    }
   },
   breakpoints: {
     values: {
@@ -144,7 +106,49 @@ export default function Dashboard(props) {
   const [users, setUsers] = React.useState([]);
   const [category, setCategory] = React.useState([]);
 
-  // get all user data 
+  const navigate = useNavigate();
+
+  const { user, logOut } = React.useContext(AuthContext)
+
+  const NAVIGATION = [
+    {
+      kind: "header",
+      title: "Main items",
+    },
+    {
+      title: "Dashboard",
+      icon: <DashboardIcon />,
+    },
+    {
+      segment: "category",
+      title: "Categories",
+      icon: <CategoryOutlined />,
+    },
+    {
+      segment: "property",
+      title: "Property",
+      icon: <VillaOutlined />,
+    },
+    {
+      segment: "host",
+      title: "Hosts",
+      icon: <SupervisorAccountOutlined />,
+    },
+    {
+      segment: "user",
+      title: "Users",
+      icon: <GroupOutlined />,
+    },
+    {
+      kind: "divider",
+    },
+    {
+      segment: "logout",
+      title: "Logout",
+      icon: <LogoutOutlined />,
+    }
+  ];
+
   const getAllUsers = async () => {
     const res = await axios.get(`${api}/Auth`);
     if (res) {
@@ -165,35 +169,35 @@ export default function Dashboard(props) {
     }
   };
 
-  React.useEffect(() =>{
+  React.useEffect(() => {
     getAllCategories();
-  },[])
+  }, [])
 
- 
+
   const [user2, setUser] = React.useState([]);
 
   React.useEffect(() => {
     setUser(users?.filter((u) => u.gid === 3));
   }, [users]);
 
-  
+
   const [host, setHost] = React.useState([]);
 
   React.useEffect(() => {
     setHost(users?.filter((u) => u.gid === 2));
   }, [users]);
 
-  const [earnings,setEarnings] = React.useState(0)
+  const [earnings, setEarnings] = React.useState(0)
   const getEarnings = async () => {
     const res = await axios.get(`${api}/Bookings/adminEarnings`)
-    if(res?.data){
+    if (res?.data) {
       setEarnings(res?.data)
     }
   }
 
-  React.useEffect(()=>{
+  React.useEffect(() => {
     getEarnings()
-  },[])
+  }, [])
 
   const [weeklyEarnings, setWeeklyEarnings] = React.useState([]);
 
@@ -225,7 +229,7 @@ export default function Dashboard(props) {
   const chartData = {
     labels: weeklyEarnings.map(item => {
       const date = new Date(item.date);
-      return date.toLocaleDateString('en-US', { 
+      return date.toLocaleDateString('en-US', {
         weekday: 'short',
         day: 'numeric'
       });
@@ -286,7 +290,7 @@ export default function Dashboard(props) {
         borderColor: '#b91c1c',
         borderWidth: 1,
         callbacks: {
-          label: function(context) {
+          label: function (context) {
             return `Earnings: ₹${context.parsed.y.toLocaleString()}`;
           }
         }
@@ -305,7 +309,7 @@ export default function Dashboard(props) {
             family: "'Roboto', sans-serif"
           },
           color: '#ffffff',
-          callback: function(value) {
+          callback: function (value) {
             return '₹' + value.toLocaleString();
           }
         }
@@ -370,10 +374,14 @@ export default function Dashboard(props) {
         return <Category />;
       case "/host":
         return <Host />;
-        case "/user":
-          return <User />;
-       case "/property":
+      case "/user":
+        return <User />;
+      case "/property":
         return <Property />;
+      case "/logout":
+        logOut();               
+        router.push("/login");  
+        return null;
       case "/dashboard":
       default:
         return (
@@ -418,10 +426,10 @@ export default function Dashboard(props) {
             </Grid>
 
             <Box mt={4} mb={4}>
-              <Paper 
+              <Paper
                 elevation={3}
-                sx={{ 
-                  p: 3, 
+                sx={{
+                  p: 3,
                   borderRadius: 3,
                   backgroundColor: '#1e1e1e',
                   '& canvas': {
@@ -509,7 +517,7 @@ export default function Dashboard(props) {
         // },
         title: "HomyWay",
       }}
-      
+
     >
       <DashboardLayout>{renderContent()}</DashboardLayout>
     </AppProvider>

@@ -6,14 +6,14 @@ import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
 import Input from '@mui/joy/Input';
 import Button from '@mui/joy/Button';
-import Link from '@mui/joy/Link';
 import { api } from '../api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Box, Container } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import homywayLogo from "../assets/images/homywayLogo.png";
+import { toast } from 'react-toastify';
 
 export default function Login() {
   const [email, setEmail] = React.useState('');
@@ -26,7 +26,12 @@ export default function Login() {
       const res = await axios.post(`${api}/Auth/login`, { email, password: pass });
       if (res.data.token) {
         localStorage.setItem('token', res.data.token);
-        navigate('/', { replace: true });
+        if(res?.data?.user?.gid === 1){
+          navigate('/admin/dashboard', { replace: true });       
+        }else{
+          navigate('/', { replace: true });
+        }
+        toast.success(`Login successful ${res?.data?.user?.name}`)
       }
     } catch (error) {
       console.error('Login failed', error);
@@ -198,13 +203,16 @@ export default function Login() {
           <Typography
             endDecorator={
               <Link
-                href="/sign-up"
-                sx={{
+                to="/signup"
+                style={{
                   color: '#b91c1c',
                   textDecoration: 'none',
-                  '&:hover': {
-                    textDecoration: 'underline',
-                  },
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.textDecoration = 'underline';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.textDecoration = 'none';
                 }}
               >
                 Sign up
@@ -218,6 +226,7 @@ export default function Login() {
           >
             Don't have an account?
           </Typography>
+
         </Sheet>
       </Container>
     </Box>
