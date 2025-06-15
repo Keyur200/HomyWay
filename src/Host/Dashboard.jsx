@@ -40,6 +40,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import AllBookings from "./AllBookings";
 
 ChartJS.register(
   CategoryScale,
@@ -87,6 +88,11 @@ export default function Dashboard(props) {
     {
       segment: "mybookings",
       title: "My Bookings",
+      icon: <BookOnlineIcon />,
+    },
+    {
+      segment: "allbookings",
+      title: "All Bookings",
       icon: <BookOnlineIcon />,
     },
     {
@@ -357,6 +363,8 @@ export default function Dashboard(props) {
         return <MyProperty />;
       case "/mybookings":
         return <MyBookings />;
+      case "/allbookings":
+        return <AllBookings />;
       case "/mywishlist":
         return <MyWishlist />;
       case "/logout":
@@ -430,12 +438,7 @@ export default function Dashboard(props) {
               </Paper>
             </Box>
 
-            <Typography variant="h4" gutterBottom>My Bookings</Typography>
-            <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 650 }} aria-label="caption table">
-                <caption>My Bookings</caption>
-              </Table>
-            </TableContainer>
+            <Typography variant="h4" gutterBottom>Bookings per Property</Typography>
 
             <BookingPerPropertyChart />
           </Box>

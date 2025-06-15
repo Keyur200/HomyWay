@@ -17,7 +17,27 @@ import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import dayjs from 'dayjs';
 import { styled } from '@mui/material/styles';
 import { GoogleMap, OverlayView, InfoWindow, LoadScript, Marker, StandaloneSearchBox, useJsApiLoader } from '@react-google-maps/api';
-
+import { Stack, Chip } from "@mui/material";
+import WifiIcon from '@mui/icons-material/Wifi';
+import LocalParkingIcon from '@mui/icons-material/LocalParking';
+import PoolIcon from '@mui/icons-material/Pool';
+import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
+import TvIcon from '@mui/icons-material/Tv';
+import AcUnitIcon from '@mui/icons-material/AcUnit';
+import LocalLaundryServiceIcon from '@mui/icons-material/LocalLaundryService';
+import KitchenIcon from '@mui/icons-material/Kitchen';
+import BalconyIcon from '@mui/icons-material/Balcony';
+import FireplaceIcon from '@mui/icons-material/Fireplace';
+import HotTubIcon from '@mui/icons-material/HotTub';
+import OutdoorGrillIcon from '@mui/icons-material/OutdoorGrill';
+import BeachAccessIcon from '@mui/icons-material/BeachAccess';
+import SecurityIcon from '@mui/icons-material/Security';
+import PetsIcon from '@mui/icons-material/Pets';
+import SpaIcon from '@mui/icons-material/Spa';
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
+import ElevatorIcon from '@mui/icons-material/Elevator';
+import SmokingRoomsIcon from '@mui/icons-material/SmokingRooms';
 const BlockedDay = styled(PickersDay)(({ theme }) => ({
   backgroundColor: '#b0dcf3',
   color: 'white',
@@ -63,7 +83,6 @@ const PropertyDetail = () => {
           });
         });
         setBookedDates(allBookedDates);
-        console.log(allBookedDates);
       }
     } catch (error) {
       console.error('Error fetching booked dates:', error);
@@ -285,7 +304,49 @@ const PropertyDetail = () => {
     setMapLoaded(true);
   };
 
+  const [amenities, setAmenities] = useState([])
 
+  const getAllAmenities = async () => {
+    const res = await axios.get(`${api}/Amenities`)
+    if (res?.data) {
+      setAmenities(res?.data)
+      console.log(res?.data)
+    }
+  }
+
+  useEffect(() => {
+    getAllAmenities()
+  }, [])
+
+  const amenitiesId = property?.amenities ? JSON.parse(property?.amenities) : [];
+  const propertyAmenities = amenities.filter(amenity =>
+    amenitiesId.includes(amenity?.id)
+  );
+
+  const getAmenityIcon = (amenityName) => {
+    const name = amenityName.toLowerCase();
+    if (name.includes('wifi')) return <WifiIcon />;
+    if (name.includes('parking')) return <LocalParkingIcon />;
+    if (name.includes('pool')) return <PoolIcon />;
+    if (name.includes('gym') || name.includes('fitness')) return <FitnessCenterIcon />;
+    if (name.includes('restaurant') || name.includes('dining')) return <RestaurantIcon />;
+    if (name.includes('television')) return <TvIcon />;    
+    if (name.includes('ac')) return <AcUnitIcon />;
+    if (name.includes('laundry') || name.includes('washer')) return <LocalLaundryServiceIcon />;
+    if (name.includes('kitchen') || name.includes('refrigerator')) return <KitchenIcon />;
+    if (name.includes('balcony') || name.includes('patio')) return <BalconyIcon />;
+    if (name.includes('fireplace')) return <FireplaceIcon />;
+    if (name.includes('hot tub') || name.includes('jacuzzi')) return <HotTubIcon />;
+    if (name.includes('grill') || name.includes('bbq')) return <OutdoorGrillIcon />;
+    if (name.includes('beach')) return <BeachAccessIcon />;
+    if (name.includes('cctv') || name.includes('safe')) return <SecurityIcon />;
+    if (name.includes('pet')) return <PetsIcon />;
+    if (name.includes('spa')) return <SpaIcon />;
+    if (name.includes('room') || name.includes('suite')) return <MeetingRoomIcon />;
+    if (name.includes('elevator') || name.includes('lift')) return <ElevatorIcon />;
+    if (name.includes('smoking')) return <SmokingRoomsIcon />;
+    return <HomeIcon />; // default icon
+  };
   return (
     <div className="w-full relative min-h-screen bg-[#f9f9f9] text-[#4f4f4f] mt-12">
       {/* Back Navigation */}
@@ -424,6 +485,24 @@ const PropertyDetail = () => {
                 </h6>
               </div>
             </div>
+
+            <hr className="border-[1px] w-full my-5 md:my-7" />
+
+            <div className="flex flex-col text-start">
+              <h2 className="text-2xl font-semibold mb-8">What this place offers</h2>
+              <div className="grid grid-cols-2 gap-x-12 gap-y-6 ml-6">
+                {propertyAmenities &&
+                  propertyAmenities.map((amenity) => (
+                    <div key={amenity.id} className="flex items-center space-x-4">
+                      <span className="text-xl text-gray-700">
+                        {getAmenityIcon(amenity.name)}
+                      </span>
+                      <span className="text-base text-gray-800">{amenity.name}</span>
+                    </div>
+                  ))}
+              </div>
+            </div>
+
           </div>
 
           {/* Right Column - Booking Form */}

@@ -4,13 +4,13 @@ import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { api } from '../api';
-import { 
-  CalendarDaysIcon, 
-  UserIcon, 
-  PhoneIcon, 
-  MoonIcon, 
-  MapPinIcon, 
-  HomeIcon, 
+import {
+  CalendarDaysIcon,
+  UserIcon,
+  PhoneIcon,
+  MoonIcon,
+  MapPinIcon,
+  HomeIcon,
   ArrowLongRightIcon,
   CreditCardIcon
 } from '@heroicons/react/24/outline';
@@ -66,14 +66,14 @@ const Booking = () => {
   const getPropertyAmenities = async (amenityIds) => {
     try {
       if (!amenityIds) return;
-      
+
       // Parse the amenity IDs if they're in string format
       const ids = typeof amenityIds === 'string' ? JSON.parse(amenityIds) : amenityIds;
-      
+
       if (!Array.isArray(ids) || ids.length === 0) return;
 
       // Fetch amenities for each ID
-      const amenityPromises = ids.map(id => 
+      const amenityPromises = ids.map(id =>
         axios.get(`${api}/Amenities/${id}`)
           .then(res => res.data)
           .catch(err => {
@@ -122,8 +122,8 @@ const Booking = () => {
           <h5 className="text-2xl font-semibold text-gray-800 mb-6">
             No booking details found. Please select a property first.
           </h5>
-          <button 
-            onClick={() => navigate('/')} 
+          <button
+            onClick={() => navigate('/')}
             className="px-8 py-3 bg-[#b91c1c] text-white rounded-lg hover:bg-[#991b1b] transition-all duration-300 font-medium"
           >
             Return to Home
@@ -158,7 +158,7 @@ const Booking = () => {
         description: `Booking for ${propertyDetails.name}`,
         handler: async function (response) {
           try {
-            // Verify payment and create booking
+
             const bookingResponse = await axios.post(`${api}/Bookings`, {
               userId: bookingInfo.userId,
               propertyId: propertyDetails.id,
@@ -176,9 +176,17 @@ const Booking = () => {
               createdDate: new Date().toISOString().split('T')[0],
               isTestPayment: true
             });
-            console.log(bookingInfo.checkin);
+
+            const bookingId = bookingResponse.data.id;
 
             if (bookingResponse.data) {
+              await axios.post(`${api}/PaymentInfoes`, {
+                bookingId,
+                paymentId : response.razorpay_payment_id,
+                paymentMethod : response.razorpay_method || "razorpay online",
+                createdDate: new Date().toISOString()
+              });
+
               toast.success("Payment Successful! Booking confirmed.");
               navigate('/profile');
             }
@@ -200,7 +208,7 @@ const Booking = () => {
           color: "#0288d1"
         },
         modal: {
-          ondismiss: function() {
+          ondismiss: function () {
             toast.info("Payment cancelled");
             navigate('/');
           }
@@ -225,7 +233,6 @@ const Booking = () => {
       toast.error("Failed to initiate test payment. Please try again.");
     }
   };
-  console.log(propertyDetails);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -251,9 +258,9 @@ const Booking = () => {
                     <h3 className="text-white text-2xl font-bold">{propertyDetails.name}</h3>
                   </div>
                 </div>
-                
+
                 <div className="p-6 space-y-6">
-                  <div className="space-y-2" style={{display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-start'}}>
+                  <div className="space-y-2" style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-start' }}>
                     <div className="flex items-center text-gray-700">
                       <MapPinIcon className="w-5 h-5 text-[#b91c1c]" />
                       <span className="font-medium">{propertyDetails.address}</span>

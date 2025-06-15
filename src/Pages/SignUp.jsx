@@ -11,6 +11,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Box, Container } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
+import UserIcon from '@mui/icons-material/People';
+import PhoneIcon from '@mui/icons-material/Phone';
 import LockIcon from '@mui/icons-material/Lock';
 import homywayLogo from "../assets/images/homywayLogo.png";
 import { RadioGroup, Radio } from '@mui/joy';
@@ -117,8 +119,8 @@ export default function SignUp() {
                             type="email"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            placeholder="johndoe@email.com"
-                            startDecorator={<EmailIcon sx={{ color: 'rgba(0, 0, 0, 0.5)' }} />}
+                            placeholder="John doe"
+                            startDecorator={<UserIcon sx={{ color: 'rgba(0, 0, 0, 0.5)' }} />}
                             sx={{
                                 '--Input-decoratorChildHeight': '45px',
                                 '--Input-radius': '8px',
@@ -195,8 +197,8 @@ export default function SignUp() {
                             type="email"
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
-                            placeholder="johndoe@email.com"
-                            startDecorator={<EmailIcon sx={{ color: 'rgba(0, 0, 0, 0.5)' }} />}
+                            placeholder="878421255"
+                            startDecorator={<PhoneIcon sx={{ color: 'rgba(0, 0, 0, 0.5)' }} />}
                             sx={{
                                 '--Input-decoratorChildHeight': '45px',
                                 '--Input-radius': '8px',

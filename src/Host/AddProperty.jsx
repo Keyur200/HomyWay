@@ -487,7 +487,7 @@ export default function AddProperty() {
             What about these guest favourites?
           </Typography>
           <Grid container spacing={2}>
-            {amenities?.slice(0, amenities.length - 4).map((amn) => {
+            {amenities?.map((amn) => {
               const isSelected = selected.includes(amn?.id);
               return (
                 <Grid item xs={12} sm={6} md={3} key={amn?.id}>
@@ -510,35 +510,6 @@ export default function AddProperty() {
               );
             })}
           </Grid>
-            <Typography variant="body2" color="text.secondary" gutterBottom sx={{mt:3}}>
-              Do you have any of these safety items?
-            </Typography>
-          <Grid container spacing={2}>
-
-            {amenities?.slice(-4).map((amn) => {
-              const isSelected = selected.includes(amn?.id);
-              return (
-                <Grid item xs={12} sm={6} md={3} key={amn?.id}>
-                  <Card
-                    sx={{
-                      border: isSelected ? '3px solid #f43f5e' : '3px solid #ddd',
-                      backgroundColor: isSelected ? '#fff0f3' : '#fff',
-                      borderRadius: 2,
-                    }}
-                  >
-                    <CardActionArea onClick={() => toggleAmenity(amn?.id)} sx={{ p: 2 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body1" fontWeight={500} sx={{ color: 'black' }}>
-                          {amn?.name}
-                        </Typography>
-                      </Box>
-                    </CardActionArea>
-                  </Card>
-                </Grid>
-              );
-            })}
-          </Grid>
-
         </Box>
       )}
     </>

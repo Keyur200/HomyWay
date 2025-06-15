@@ -5,6 +5,8 @@ import { differenceInCalendarDays, format } from 'date-fns'
 import { api } from '../../api'
 import { AuthContext } from '../../Context/AuthProvider'
 import { FaStar } from 'react-icons/fa';
+import { MdCancel } from "react-icons/md";
+import { toast } from 'react-toastify'
 
 const MyBookings = () => {
     const [data, setdata] = useState([])
@@ -14,7 +16,6 @@ const MyBookings = () => {
         await axios.get(`${api}/Bookings/user/${user?.id}`)
             .then(({ data }) => {
                 setdata(data)
-                console.log(data)
             })
     }
 
@@ -51,6 +52,17 @@ const MyBookings = () => {
 
     };
 
+    const [showCancelModal, setShowCancelModal] = useState(false);
+    const [selectedBookingId, setSelectedBookingId] = useState(null);
+
+    const handleCancelTrip = async (id) => {
+        const res = await axios.delete(`${api}/Bookings/${id}`)
+        if(res){
+            toast.info("Yo have cancelled your trip.")
+            getData()
+        } 
+    }
+
     return (
         <div className='flex flex-col py-5 md:py-10 px-4 md:px-20 lg:px-40'>
             <h2 className='text-xl md:text-2xl font-semibold mb-4 md:mb-6'>My Bookings</h2>
@@ -74,14 +86,14 @@ const MyBookings = () => {
                                     {v?.nights} night ꞏ {v?.guests} guests
                                 </span>
                                 <span className='text-base md:text-lg font-semibold flex gap-1 items-center'>
-                                    ₹ {v?.amount} 
+                                    ₹ {v?.amount}
                                     <p className='text-sm md:text-base font-bold text-[#FF385C] ml-1'> ✓</p>
                                 </span>
                                 <span className='text-sm md:text-base font-semibold text-[#959595] flex flex-wrap gap-1 items-center'>
                                     {format(v?.checkkin, 'dd/MM/yyyy')} » {format(v?.checkout, 'dd/MM/yyyy')}
                                 </span>
                                 <span className='text-sm md:text-base font-semibold break-words'>
-                                    {v?.property?.propertyName} ꞏ 
+                                    {v?.property?.propertyName} ꞏ
                                     <span className='text-xs md:text-sm font-semibold text-[#797979] ml-1'>
                                         {v?.property?.propertyAdderss}
                                     </span>
@@ -89,31 +101,92 @@ const MyBookings = () => {
                             </div>
 
                             <p hidden>{difference = differenceInCalendarDays(new Date(v?.checkout), new Date(currentDate))}</p>
-                            {difference < 0 && (
-                                <h2 className='absolute top-2 right-0 bg-[#FF385C] text-white py-1 px-3 rounded-s-xl text-xs md:text-sm font-semibold'>
-                                    Expired
-                                </h2>
-                            )}
-                            <p hidden>{difference2 = differenceInCalendarDays(new Date(v?.checkkin), new Date(currentDate))}</p>
-                            {difference2 > 0 && (
-                                <h2 className='absolute top-2 right-0 bg-[#a2db12] text-white py-1 px-3 rounded-s-xl text-xs md:text-sm font-semibold'>
-                                    Upcoming
-                                </h2>
-                            )}
+                            {(() => {
+                                const checkinDate = new Date(v?.checkkin);
+                                const checkoutDate = new Date(v?.checkout);
+                                const today = new Date(currentDate);
+                                const difference = checkoutDate - today;
 
-                            {difference < 0 && (
-                                    <button
-                                        onClick={() => handleOpen(v?.propertyId)}
-                                    className="absolute bottom-2 right-2 flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-gradient-to-r from-pink-500 to-yellow-500 text-white text-xs md:text-sm font-semibold rounded-full shadow-lg md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:scale-105 hover:shadow-xl"
-                                    >
-                                    <FaStar className="text-white text-xs md:text-sm" />
-                                        Add Review
-                                    </button>
-                            )}
+                                let statusLabel = null;
+                                let actionButton = null;
+
+                                if (checkoutDate < today) {
+                                    statusLabel = (
+                                        <h2 className='absolute top-2 right-0 bg-[#ff5574] text-black py-1 px-3 rounded-s-xl text-xs md:text-sm font-semibold'>
+                                            Expired
+                                        </h2>
+                                    );
+                                    actionButton = (
+                                        <button
+                                            onClick={() => handleOpen(v?.propertyId)}
+                                            className="absolute bottom-2 right-2 flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-gradient-to-r from-pink-500 to-yellow-500 text-white text-xs md:text-sm font-semibold rounded-full shadow-lg md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:scale-105 hover:shadow-xl"
+                                        >
+                                            <FaStar className="text-white text-xs md:text-sm" />
+                                            Add Review
+                                        </button>
+                                    );
+                                } else if (checkinDate > today) {
+                                    statusLabel = (
+                                        <h2 className='absolute top-2 right-0 bg-[#17ddf7] text-black py-1 px-3 rounded-s-xl text-xs md:text-sm font-semibold'>
+                                            Upcoming
+                                        </h2>
+                                    );
+                                    actionButton = (
+                                        <button
+                                            onClick={() => {
+                                                setShowCancelModal(true);
+                                                setSelectedBookingId(v?.id);
+                                            }}
+                                            className="absolute bottom-2 right-2 flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-red-500 hover:bg-red-600 text-white text-xs md:text-sm font-semibold rounded-full shadow-lg md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:scale-105 hover:shadow-xl"
+                                        >
+                                            <MdCancel className="text-white text-base md:text-lg" />
+                                            Cancel Trip
+                                        </button>
+                                    );
+                                } else {
+                                    statusLabel = (
+                                        <h2 className='absolute top-2 right-0 bg-[#a2db12] text-black py-1 px-3 rounded-s-xl text-xs md:text-sm font-semibold'>
+                                            Active
+                                        </h2>
+                                    );
+                                }
+
+                                return (
+                                    <>
+                                        {statusLabel}
+                                        {actionButton}
+                                    </>
+                                );
+                            })()}
                         </div>
                     ))
                 }
 
+                {showCancelModal && (
+                    <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex justify-center items-center">
+                        <div className="bg-black rounded-xl p-6 w-80 shadow-2xl text-center space-y-4">
+                            <h2 className="text-lg font-semibold text-gray-300">Cancel this trip?</h2>
+                            <p className="text-sm text-white">Are you sure you want to cancel this booking?</p>
+                            <div className="flex justify-center gap-4 mt-4">
+                                <button
+                                    onClick={() => {
+                                        handleCancelTrip(selectedBookingId);
+                                        setShowCancelModal(false);
+                                    }}
+                                    className="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-lg shadow"
+                                >
+                                    Yes
+                                </button>
+                                <button
+                                    onClick={() => setShowCancelModal(false)}
+                                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-4 py-2 rounded-lg shadow"
+                                >
+                                    No
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
                 {/* Review Modal */}
                 {showModal && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4">
@@ -127,8 +200,7 @@ const MyBookings = () => {
                                     return (
                                         <span
                                             key={index}
-                                            className={`cursor-pointer text-xl md:text-2xl mx-2 md:mx-3 ${
-                                                starValue <= (hover || rating) ? 'text-yellow-400' : 'text-gray-500'
+                                            className={`cursor-pointer text-xl md:text-2xl mx-2 md:mx-3 ${starValue <= (hover || rating) ? 'text-[#ff4538]' : 'text-gray-500'
                                                 }`}
                                             onClick={() => setRating(starValue)}
                                             onMouseEnter={() => setHover(starValue)}
@@ -143,17 +215,17 @@ const MyBookings = () => {
                             {/* Review Textarea */}
                             <div className='flex flex-col pb-4 relative'>
                                 <p className='text-xs pb-1 font-bold uppercase'>Type your review</p>
-                                <textarea 
-                                    type="text" 
-                                    rows={5} 
-                                    value={review} 
-                                    maxLength={300} 
-                                    onChange={(e) => setReview(e.target.value)} 
-                                    placeholder='add review ...' 
-                                    className='h-full outline-[#384fff] border border-[#256eec] rounded-lg py-1 px-2 text-xs md:text-sm' 
-                                    required 
+                                <textarea
+                                    type="text"
+                                    rows={5}
+                                    value={review}
+                                    maxLength={300}
+                                    onChange={(e) => setReview(e.target.value)}
+                                    placeholder='add review ...'
+                                    className='h-full outline-[#ff4538] border border-[#ff4538] rounded-lg py-1 px-2 text-xs md:text-sm'
+                                    required
                                 />
-                                <p className='absolute bg-blue-500 bottom-6 right-2 text-white text-xs font-semibold px-1 rounded-md'>
+                                <p className='absolute bg-[#ff4538] bottom-6 right-2 text-white text-xs font-semibold px-1 rounded-md'>
                                     {review ? review?.length : "0"} / 300
                                 </p>
                             </div>
@@ -167,7 +239,7 @@ const MyBookings = () => {
                                     Cancel
                                 </button>
                                 <button
-                                    className="px-3 md:px-4 py-1.5 md:py-2 bg-blue-600 text-white text-xs md:text-sm rounded"
+                                    className="px-3 md:px-4 py-1.5 md:py-2 bg-blue-600 text-white bg-[#ff4538]  text-xs md:text-sm rounded"
                                     onClick={handleSubmit}
                                 >
                                     Submit
@@ -176,6 +248,8 @@ const MyBookings = () => {
                         </div>
                     </div>
                 )}
+
+
             </div>
         </div>
     )

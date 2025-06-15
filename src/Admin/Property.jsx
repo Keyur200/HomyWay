@@ -220,8 +220,8 @@ function Property() {
     if (name.includes('pool')) return <PoolIcon />;
     if (name.includes('gym') || name.includes('fitness')) return <FitnessCenterIcon />;
     if (name.includes('restaurant') || name.includes('dining')) return <RestaurantIcon />;
-    if (name.includes('tv') || name.includes('television')) return <TvIcon />;
-    if (name.includes('ac') || name.includes('air') || name.includes('cooling')) return <AcUnitIcon />;
+    if (name.includes('television')) return <TvIcon />;
+    if (name.includes('ac')) return <AcUnitIcon />;
     if (name.includes('laundry') || name.includes('washer')) return <LocalLaundryServiceIcon />;
     if (name.includes('kitchen') || name.includes('refrigerator')) return <KitchenIcon />;
     if (name.includes('balcony') || name.includes('patio')) return <BalconyIcon />;
@@ -229,7 +229,7 @@ function Property() {
     if (name.includes('hot tub') || name.includes('jacuzzi')) return <HotTubIcon />;
     if (name.includes('grill') || name.includes('bbq')) return <OutdoorGrillIcon />;
     if (name.includes('beach')) return <BeachAccessIcon />;
-    if (name.includes('security') || name.includes('safe')) return <SecurityIcon />;
+    if (name.includes('cctv') || name.includes('safe')) return <SecurityIcon />;
     if (name.includes('pet')) return <PetsIcon />;
     if (name.includes('spa')) return <SpaIcon />;
     if (name.includes('room') || name.includes('suite')) return <MeetingRoomIcon />;

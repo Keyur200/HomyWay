@@ -70,6 +70,7 @@ const MyProperty = () => {
   const [latitude, setLatitude] = useState()
   const [longitude, setLongitude] = useState()
   const [selected, setSelected] = useState([]);
+  const [status, setStatus] = useState();
   const [existingImages, setExistingImages] = useState([]);
   const UploadBox = styled(Box)(({ theme }) => ({
     border: '2px dashed #BB86FC',
@@ -130,7 +131,6 @@ const MyProperty = () => {
     const res = await axios.get(`${api}/Property/${id}`)
     if (res?.data) {
       setSelectedProperty(res?.data)
-      console.log(res?.data)
       setOpenEdit(true);
     }
   };
@@ -155,6 +155,7 @@ const MyProperty = () => {
       setPrice(selectedProperty.propertyPrice);
       setLatitude(selectedProperty.latitude);
       setLongitude(selectedProperty.longitude);
+      setStatus(selectedProperty.status);
       setcid(selectedProperty.categoryId);
       setSelected(JSON.parse(selectedProperty.amenities || "[]"));
       setExistingImages(selectedProperty.imagesNavigation || "[]");
@@ -174,7 +175,7 @@ const MyProperty = () => {
     formData.append("bedRoom", bedroom);
     formData.append("bed", bed);
     formData.append("bathroom", bathroom);
-    formData.append("status", "Pending");
+    formData.append("status", status);
     formData.append("propertyPrice", price);
     formData.append("categoryId", cid);
     formData.append("latitude", latitude);
