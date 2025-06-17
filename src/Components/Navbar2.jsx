@@ -142,7 +142,7 @@ function Navbar2() {
             </Button>
             <Button
               component={Link}
-              to="/guesthouse"
+              to="/bungalow"
               variant="text"
               size="small"
               sx={{
@@ -154,7 +154,7 @@ function Navbar2() {
                 },
               }}
             >
-              Guest House
+              Bungalow
             </Button>
           </Box>
 

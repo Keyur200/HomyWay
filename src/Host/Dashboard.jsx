@@ -30,6 +30,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import { Line } from 'react-chartjs-2';
+import logo from '../../src/assets/images/homywayLogo.png'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -41,6 +42,7 @@ import {
   Legend,
 } from 'chart.js';
 import AllBookings from "./AllBookings";
+import { useNavigate } from "react-router-dom";
 
 ChartJS.register(
   CategoryScale,
@@ -58,7 +60,7 @@ export default function Dashboard(props) {
   const router = useDemoRouter("/dashboard");
   const demoWindow = window ? window() : undefined;
   const [bookings, setBooking] = React.useState([])
-
+  const navigate = useNavigate();
   const NAVIGATION = [
     {
       kind: "header",
@@ -169,7 +171,7 @@ export default function Dashboard(props) {
   const chartData = {
     labels: weeklyEarnings.map(item => {
       const date = new Date(item.date);
-      return date.toLocaleDateString('en-US', { 
+      return date.toLocaleDateString('en-US', {
         weekday: 'short',
         day: 'numeric'
       });
@@ -230,7 +232,7 @@ export default function Dashboard(props) {
         borderColor: '#b91c1c',
         borderWidth: 1,
         callbacks: {
-          label: function(context) {
+          label: function (context) {
             return `Earnings: ₹${context.parsed.y.toLocaleString()}`;
           }
         }
@@ -249,7 +251,7 @@ export default function Dashboard(props) {
             family: "'Roboto', sans-serif"
           },
           color: '#ffffff',
-          callback: function(value) {
+          callback: function (value) {
             return '₹' + value.toLocaleString();
           }
         }
@@ -368,8 +370,8 @@ export default function Dashboard(props) {
       case "/mywishlist":
         return <MyWishlist />;
       case "/logout":
-        logOut();               
-        router.push("/login");  
+        logOut();
+        router.push("/login");
         return null;
       case "/dashboard":
       default:
@@ -417,10 +419,10 @@ export default function Dashboard(props) {
             </Grid>
 
             <Box mt={4} mb={4}>
-              <Paper 
+              <Paper
                 elevation={3}
-                sx={{ 
-                  p: 3, 
+                sx={{
+                  p: 3,
                   borderRadius: 3,
                   backgroundColor: '#1e1e1e',
                   '& canvas': {
@@ -455,10 +457,7 @@ export default function Dashboard(props) {
       title="HomyWay"
       titleProps={{ className: "app-title" }}
       branding={{
-        // logo: {
-        //   src: homywayLogo,
-        //   alt: "HomyWay Logo",
-        // },
+        logo: <img src={logo} alt="HomyWay Logo" onClick={() => navigate("/")} />,
         title: "HomyWay",
       }}
     >

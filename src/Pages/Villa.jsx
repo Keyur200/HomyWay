@@ -69,7 +69,7 @@ function Villa() {
   const [propertiesByVilla, setPropertiesByVilla] = React.useState([]);
   const { user } = useContext(AuthContext);
   const [wishlist, setWishlist] = React.useState([]);
-  const [category, setCategory] = React.useState(2);
+  const [category, setCategory] = React.useState(1002);
   const [priceRange, setPriceRange] = React.useState([1000, 20000]);
   const [city, setCity] = React.useState("");
   const [bed, setBed] = React.useState("");
@@ -91,7 +91,7 @@ function Villa() {
   };
   const getMyPropertyByVilla = async (filters = {}) => {
     try {
-      let queryParams = `category=1`;
+      let queryParams = `category=1002`;
 
       if (filters.maxPrice !== undefined) {
         queryParams += `&maxPrice=${filters.maxPrice}`;
@@ -159,6 +159,34 @@ function Villa() {
       city,
     });
   };
+
+  const [reviewsByProperty, setReviewsByProperty] = useState({});
+
+  const getAllReviews = async () => {
+    try {
+      const allReviews = await Promise.all(
+        propertiesByVilla.map(async (property) => {
+          const res = await axios.get(`${api}/Reviews/property/${property.propertyId}`);
+          return { propertyId: property.propertyId, reviews: res.data || [] };
+        })
+      );
+
+      const reviewMap = {};
+      allReviews.forEach(({ propertyId, reviews }) => {
+        reviewMap[propertyId] = reviews;
+      });
+
+      setReviewsByProperty(reviewMap);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (propertiesByVilla.length) {
+      getAllReviews();
+    }
+  }, [propertiesByVilla]);
 
   const handleResetFilters = () => {
     setPriceRange([1000, 20000]);
@@ -357,28 +385,29 @@ function Villa() {
           {/* Property Cards */}
           <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
             <Grid container spacing={2}>
-              {propertiesByVilla?.filter(p => p?.status === 'active')?.map((p, index) => {
-                const animation = cardAnimations[index % cardAnimations.length];
+              {propertiesByVilla?.filter(p => p?.status === 'active')?.map((p) => {
+                const propertyReviews = reviewsByProperty[p?.propertyId] || [];
+                const totalRating = propertyReviews.reduce((sum, r) => sum + r.rating, 0);
+                const avgRating = propertyReviews.length ? totalRating / propertyReviews.length : 0;
                 return (
-                  <Grid item key={p?.id} xs={12} sm={6} md={4}>
+
+                  <Grid item xs={12} sm={6} md={4} lg={4} key={p?.id}>
                     <Card
                       sx={{
                         minWidth: 300,
                         maxWidth: 300,
-                        borderRadius: 2,
-                        position: "relative",
+                        borderRadius: 3,
                         background: "#1e1e1e",
                         color: "#fff",
-                        animation: `${animation} 0.8s ease-out`,
-                        animationDelay: `${index * 0.1}s`,
-                        animationFillMode: "both",
+                        position: "relative",
+                        transition: "transform 0.2s ease-in-out",
+                        "&:hover": {
+                          transform: "translateY(-5px)",
+                        },
                       }}
                     >
                       <Box sx={{ position: "relative" }}>
-                        <Slider
-                          {...sliderSettings}
-                          className="slick-slider"
-                        >
+                        <Slider {...sliderSettings}>
                           {p?.imagesNavigation?.map((img, index) => (
                             <Box key={index}>
                               <img
@@ -394,11 +423,7 @@ function Villa() {
                           ))}
                         </Slider>
                         <IconButton
-                          sx={{
-                            position: "absolute",
-                            top: 8,
-                            right: 8
-                          }}
+                          sx={{ position: "absolute", top: 8, right: 8 }}
                           aria-label="add to favorites"
                           onClick={() => handleWishlist(p?.propertyId)}
                         >
@@ -408,39 +433,33 @@ function Villa() {
                             <FavoriteBorderIcon />
                           )}
                         </IconButton>
+
                       </Box>
+
                       <CardContent>
                         <Typography variant="body2" fontWeight="bold">
-                          Villa in {p?.propertyCity}
+                          {p?.category?.categoryName} in {p?.propertyCity}
                         </Typography>
+
                         <Stack direction="row" alignItems="center" spacing={0.5}>
                           <Rating
                             name="read-only"
-                            value={4.25}
+                            value={parseFloat(avgRating.toFixed(2))}
                             precision={0.25}
                             readOnly
                             size="small"
                           />
-                          <Typography variant="body2">(4)</Typography>
+                          <Typography variant="body2">({propertyReviews?.length})</Typography>
                         </Stack>
-                        <Typography
-                          variant="body2"
-                          color="rgb(187 187 187)"
-                          sx={{
-                            '& a': {
-                              color: 'inherit',
-                              textDecoration: 'none',
-                              '&:hover': {
-                                color: '#b91c1c'
-                              }
-                            }
-                          }}
-                        >
+
+
+                        <Typography variant="body2" color="rgb(187 187 187)">
                           <Link to={`/property/${p?.slugName}`}>{p?.propertyName}</Link>
                         </Typography>
                         <Typography variant="body2" color="rgb(187 187 187)">
                           {p?.bed} beds · {p?.bedRoom} bedrooms
                         </Typography>
+
                         <Typography variant="body2" sx={{ mt: 1 }}>
                           <span style={{ fontWeight: "bold" }}>
                             ₹{p?.propertyPrice}
@@ -450,7 +469,8 @@ function Villa() {
                       </CardContent>
                     </Card>
                   </Grid>
-                );
+
+                )
               })}
             </Grid>
           </Box>
@@ -474,7 +494,7 @@ function Villa() {
             }}
           >
             <Typography variant="h6" sx={{ mb: 1 }}>
-              Map View 
+              Map View
             </Typography>
             <Box sx={{
               flex: 1,
@@ -535,7 +555,7 @@ function Villa() {
                               className="w-full h-[80px] md:h-[100px] object-cover rounded-xl md:rounded-2xl mb-2"
                             />
                             <Link to={`/property/${property?.slugName}`}><h2 className="text-black md:text-lg font-semibold truncate">{property?.propertyName}</h2></Link>
-                              <h4 className="text-black md:text-sm font-semibold truncate">{property?.propertyCity} - {property?.propertyState}</h4>
+                            <h4 className="text-black md:text-sm font-semibold truncate">{property?.propertyCity} - {property?.propertyState}</h4>
                             <p className="text-xs md:text-sm text-gray-600">₹ {property?.propertyPrice} / night</p>
 
                           </div>

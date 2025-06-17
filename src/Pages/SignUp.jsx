@@ -25,10 +25,44 @@ export default function SignUp() {
     const [gid, setGid] = React.useState('');
     const navigate = useNavigate();
 
+    const validateEmail = (email) => {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    };
+
+    const validatePhone = (phone) => {
+        const re = /^[6-9]\d{9}$/; // Indian mobile format
+        return re.test(phone);
+    };
+
+    const validatePassword = (password) => {
+        const re = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+        return re.test(password);
+    };
+
     const handleLogin = async (e) => {
         e.preventDefault();
+        if (!name || !email || !pass || !phone || !gid) {
+            toast.error("Please fill in all fields.");
+            return;
+        }
+
+        if (!validateEmail(email)) {
+            toast.error("Please enter a valid email address. example@gmail.com");
+            return;
+        }
+
+        if (!validatePhone(phone)) {
+            toast.error("Please enter a valid 10-digit phone number.");
+            return;
+        }
+
+        if (!validatePassword(pass)) {
+            toast.error("Password must be at least 6 characters and include a number.");
+            return;
+        }
         try {
-            const res = await axios.post(`${api}/Auth/register`, { name, email, password: pass, phone, status : "active", gid });
+            const res = await axios.post(`${api}/Auth/register`, { name, email, password: pass, phone, status: "active", gid });
             if (res.data) {
                 navigate('/login', { replace: true });
                 toast.success("Registration successful.")
@@ -272,7 +306,7 @@ export default function SignUp() {
                         </FormLabel>
                         <RadioGroup
                             name="role"
-                            value={gid} 
+                            value={gid}
                             onChange={(e) => setGid(e.target.value)}
                             orientation="horizontal"
                             sx={{ gap: 2 }}
@@ -280,22 +314,24 @@ export default function SignUp() {
                             <Radio
                                 value="3"
                                 label="User"
+                                color="danger"
                                 sx={{
-                                    color: '#2e2e2e',
-                                    '--Radio-actionColor': '#b91c1c',
-                                    '--Radio-labelColor': '#2e2e2e',
+                                    '--Radio-actionColor': '#b91c1c', // red button
+                                    '--Radio-labelColor': '#2e2e2e',  // black label
                                 }}
                             />
                             <Radio
                                 value="2"
                                 label="Host"
+                                color="danger"
                                 sx={{
-                                    color: '#2e2e2e',
                                     '--Radio-actionColor': '#b91c1c',
                                     '--Radio-labelColor': '#2e2e2e',
                                 }}
                             />
                         </RadioGroup>
+
+
                     </FormControl>
                     <Button
                         onClick={handleLogin}

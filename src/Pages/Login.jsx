@@ -1,6 +1,10 @@
-import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { CssVarsProvider } from '@mui/joy/styles';
 import Sheet from '@mui/joy/Sheet';
+import {
+  Dialog, DialogTitle, DialogContent, DialogActions,
+  TextField
+} from '@mui/material';
 import Typography from '@mui/joy/Typography';
 import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
@@ -16,26 +20,84 @@ import homywayLogo from "../assets/images/homywayLogo.png";
 import { toast } from 'react-toastify';
 
 export default function Login() {
-  const [email, setEmail] = React.useState('');
-  const [pass, setPass] = React.useState('');
+  const [email, setEmail] = useState('');
+  const [pass, setPass] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    if (!email || !pass) {
+      toast.error("Please fill in all fields.")
+    }
     try {
       const res = await axios.post(`${api}/Auth/login`, { email, password: pass });
       if (res.data.token) {
         localStorage.setItem('token', res.data.token);
-        if(res?.data?.user?.gid === 1){
-          navigate('/admin/dashboard', { replace: true });       
-        }else{
+        if (res?.data?.user?.gid === 1) {
+          navigate('/admin/dashboard', { replace: true });
+        } else {
           navigate('/', { replace: true });
         }
         toast.success(`Login successful ${res?.data?.user?.name}`)
+      } else {
+        toast.error(res?.data)
       }
     } catch (error) {
       console.error('Login failed', error);
     }
+  };
+
+  const [open, setOpen] = useState(false);
+  const [step, setStep] = useState(1);
+  const [phone, setPhone] = useState('');
+  const [otp, setOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [message, setMessage] = useState('');
+
+  const handleSendOtp = async () => {
+    try {
+      const res = await axios.post(`${api}/Auth/forgot-password`, { phone });
+      if(res?.data){
+        toast.success(res?.data)
+        setStep(2);
+      }
+      //setMessage('OTP sent to your phone.');
+      setStep(2);
+    } catch (err) {
+      setMessage('Error sending OTP');
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    try {
+      await axios.post(`${api}/Auth/verify-otp`, { phone, otp });
+      setMessage('OTP verified.');
+      setStep(3);
+    } catch (err) {
+      setMessage('Invalid or expired OTP');
+    }
+  };
+
+  const handleResetPassword = async () => {
+    try {
+      await axios.post(`${api}/Auth/reset-password`, { phone, newPassword });
+      setMessage('Password reset successfully.');
+      setTimeout(() => {
+        handleClose();
+      }, 2000);
+    } catch (err) {
+      setMessage('Error resetting password.');
+    }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setStep(1);
+    setPhone('');
+    setOtp('');
+    setNewPassword('');
+    setMessage('');
   };
 
   return (
@@ -226,7 +288,65 @@ export default function Login() {
           >
             Don't have an account?
           </Typography>
+          <Button onClick={() => setOpen(true)} variant="text" color="error">
+            Forgot Password?
+          </Button>
 
+          <Dialog open={open} onClose={handleClose}>
+            <DialogTitle>Forgot Password</DialogTitle>
+            <DialogContent>
+              <Box display="flex" flexDirection="column" gap={2} mt={1}>
+                {step === 1 && (
+                  <>
+                    <TextField
+                      label="Phone Number"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      fullWidth
+                    />
+                    <Button variant="contained" onClick={handleSendOtp} color="primary">
+                      Send OTP
+                    </Button>
+                  </>
+                )}
+                {step === 2 && (
+                  <>
+                    <TextField
+                      label="Enter OTP"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      fullWidth
+                    />
+                    <Button variant="contained" onClick={handleVerifyOtp} color="primary">
+                      Verify OTP
+                    </Button>
+                  </>
+                )}
+                {step === 3 && (
+                  <>
+                    <TextField
+                      label="New Password"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      fullWidth
+                    />
+                    <Button variant="contained" onClick={handleResetPassword} color="success">
+                      Reset Password
+                    </Button>
+                  </>
+                )}
+                {message && (
+                  <Typography variant="body2" color="secondary">
+                    {message}
+                  </Typography>
+                )}
+              </Box>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose} color="inherit">Cancel</Button>
+            </DialogActions>
+          </Dialog>
         </Sheet>
       </Container>
     </Box>

@@ -30,7 +30,7 @@ import { api } from "../../api";
 import { AuthContext } from "../../Context/AuthProvider";
 import MyBookings from "./MyBookings";
 import MyWishlist from "./MyWishlist";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import HomeIcon from "@mui/icons-material/Home";
 
@@ -96,7 +96,7 @@ export default function Profile(props) {
   const router = useDemoRouter("/profile");
   const demoWindow = window ? window() : undefined;
   const { user, checkAdmin, logOut } = React.useContext(AuthContext);
-
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [snackbar, setSnackbar] = React.useState({ open: false, message: "", severity: "success" });
@@ -352,8 +352,9 @@ export default function Profile(props) {
       title="HomyWay"
       titleProps={{ className: "app-title" }}
       branding={{
-        logo: <img src='./src/assets/images/homywayLogo.png' alt="HomyWay Logo" />,
+        logo: <img src='./src/assets/images/homywayLogo.png' alt="HomyWay Logo" onClick={() => navigate("/")} />,
         title: "HomyWay",
+        
       }}
     >
       <Box sx={{ position: 'relative' }}>

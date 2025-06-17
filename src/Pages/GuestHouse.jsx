@@ -69,7 +69,7 @@ function GuestHouse() {
   const [propertiesByFarmHouse, setPropertiesByFarmHouse] = React.useState([]);
   const { user } = useContext(AuthContext);
   const [wishlist, setWishlist] = React.useState([]);
-  const [category, setCategory] = React.useState(1003);
+  const [category, setCategory] = React.useState(1006);
   const [priceRange, setPriceRange] = React.useState([1000, 20000]);
   const [city, setCity] = React.useState("");
   const [bed, setBed] = React.useState("");
@@ -93,7 +93,7 @@ function GuestHouse() {
 
   const getMyPropertyByFarmhouse = async (filters = {}) => {
     try {
-      let queryParams = `category=1003`;
+      let queryParams = `category=1006`;
 
       if (filters.maxPrice !== undefined) {
         queryParams += `&maxPrice=${filters.maxPrice}`;
@@ -273,6 +273,34 @@ function GuestHouse() {
     handleLoad()
   }, [center])
 
+  const [reviewsByProperty, setReviewsByProperty] = useState({});
+
+  const getAllReviews = async () => {
+    try {
+      const allReviews = await Promise.all(
+        propertiesByFarmHouse.map(async (property) => {
+          const res = await axios.get(`${api}/Reviews/property/${property.propertyId}`);
+          return { propertyId: property.propertyId, reviews: res.data || [] };
+        })
+      );
+
+      const reviewMap = {};
+      allReviews.forEach(({ propertyId, reviews }) => {
+        reviewMap[propertyId] = reviews;
+      });
+
+      setReviewsByProperty(reviewMap);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (propertiesByFarmHouse.length) {
+      getAllReviews();
+    }
+  }, [propertiesByFarmHouse]);
+
   const [mapLoaded, setMapLoaded] = useState(false);
 
   const handleLoad = () => {
@@ -324,7 +352,7 @@ function GuestHouse() {
           }}
         >
           <Typography variant="h2" sx={{ fontWeight: "bold" }}>
-            Welcome to the Farmhouse
+            Welcome to the Bungalow
           </Typography>
           <Typography variant="h5" sx={{ mt: 2 }}>
             Enjoy peaceful living in nature's embrace.
@@ -359,28 +387,29 @@ function GuestHouse() {
           {/* Property Cards */}
           <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
             <Grid container spacing={2}>
-              {propertiesByFarmHouse?.filter(p => p?.status === 'active')?.map((p, index) => {
-                const animation = cardAnimations[index % cardAnimations.length];
+              {propertiesByFarmHouse?.filter(p => p?.status === 'active')?.map((p) => {
+                const propertyReviews = reviewsByProperty[p?.propertyId] || [];
+                const totalRating = propertyReviews.reduce((sum, r) => sum + r.rating, 0);
+                const avgRating = propertyReviews.length ? totalRating / propertyReviews.length : 0;
                 return (
-                  <Grid item key={p?.id} xs={12} sm={6} md={4}>
+
+                  <Grid item xs={12} sm={6} md={4} lg={4} key={p?.id}>
                     <Card
                       sx={{
                         minWidth: 300,
                         maxWidth: 300,
-                        borderRadius: 2,
-                        position: "relative",
+                        borderRadius: 3,
                         background: "#1e1e1e",
                         color: "#fff",
-                        animation: `${animation} 0.8s ease-out`,
-                        animationDelay: `${index * 0.1}s`,
-                        animationFillMode: "both",
+                        position: "relative",
+                        transition: "transform 0.2s ease-in-out",
+                        "&:hover": {
+                          transform: "translateY(-5px)",
+                        },
                       }}
                     >
                       <Box sx={{ position: "relative" }}>
-                        <Slider
-                          {...sliderSettings}
-                          className="slick-slider"
-                        >
+                        <Slider {...sliderSettings}>
                           {p?.imagesNavigation?.map((img, index) => (
                             <Box key={index}>
                               <img
@@ -396,55 +425,43 @@ function GuestHouse() {
                           ))}
                         </Slider>
                         <IconButton
-                          sx={{
-                            position: "absolute",
-                            top: 8,
-                            right: 8,
-
-
-                          }}
+                          sx={{ position: "absolute", top: 8, right: 8 }}
                           aria-label="add to favorites"
                           onClick={() => handleWishlist(p?.propertyId)}
                         >
                           {wishlist?.some(item => item.propertyId === p?.propertyId) ? (
                             <FavoriteIcon sx={{ color: 'red' }} />
                           ) : (
-                          <FavoriteBorderIcon />
+                            <FavoriteBorderIcon />
                           )}
                         </IconButton>
+
                       </Box>
+
                       <CardContent>
                         <Typography variant="body2" fontWeight="bold">
-                          Farmhouse in {p?.propertyCity}
+                          {p?.category?.categoryName} in {p?.propertyCity}
                         </Typography>
+
                         <Stack direction="row" alignItems="center" spacing={0.5}>
                           <Rating
                             name="read-only"
-                            value={4.25}
+                            value={parseFloat(avgRating.toFixed(2))}
                             precision={0.25}
                             readOnly
                             size="small"
                           />
-                          <Typography variant="body2">(4)</Typography>
+                          <Typography variant="body2">({propertyReviews?.length})</Typography>
                         </Stack>
-                        <Typography
-                          variant="body2"
-                          color="rgb(187 187 187)"
-                          sx={{
-                            '& a': {
-                              color: 'inherit',
-                              textDecoration: 'none',
-                              '&:hover': {
-                                color: '#b91c1c'
-                              }
-                            }
-                          }}
-                        >
+
+
+                        <Typography variant="body2" color="rgb(187 187 187)">
                           <Link to={`/property/${p?.slugName}`}>{p?.propertyName}</Link>
                         </Typography>
                         <Typography variant="body2" color="rgb(187 187 187)">
                           {p?.bed} beds · {p?.bedRoom} bedrooms
                         </Typography>
+
                         <Typography variant="body2" sx={{ mt: 1 }}>
                           <span style={{ fontWeight: "bold" }}>
                             ₹{p?.propertyPrice}
@@ -454,7 +471,8 @@ function GuestHouse() {
                       </CardContent>
                     </Card>
                   </Grid>
-                );
+
+                )
               })}
             </Grid>
           </Box>
@@ -533,173 +551,173 @@ function GuestHouse() {
                             onMouseEnter={() => setHoveredPropertyId(property.propertyId)}
                             onMouseLeave={() => setHoveredPropertyId(null)}
                           >
-                              <img
-                                src={property?.imagesNavigation[0]?.imageUrl}
-                                alt={property?.propertyName}
-                                className="w-full h-[80px] md:h-[100px] object-cover rounded-xl md:rounded-2xl mb-2"
-                              />
-                              <Link to={`/property/${property?.slugName}`}><h2 className="text-black md:text-lg font-semibold truncate">{property?.propertyName}</h2></Link>
-                              <h2 className="text-black md:text-lg font-semibold truncate">{property?.propertyCity} - {property?.propertyAddres}</h2>
-                              <p className="text-xs md:text-sm text-gray-600">Your Location</p>
+                            <img
+                              src={property?.imagesNavigation[0]?.imageUrl}
+                              alt={property?.propertyName}
+                              className="w-full h-[80px] md:h-[100px] object-cover rounded-xl md:rounded-2xl mb-2"
+                            />
+                            <Link to={`/property/${property?.slugName}`}><h2 className="text-black md:text-lg font-semibold truncate">{property?.propertyName}</h2></Link>
+                            <h4 className="text-black md:text-sm font-semibold truncate">{property?.propertyCity} - {property?.propertyState}</h4>
+                            <p className="text-xs md:text-sm text-gray-600">₹ {property?.propertyPrice} / night</p>
 
-                        </div>
+                          </div>
                         </OverlayView>
-                  )
-                }
+                      )
+                      }
                     </div>
-              );
+                  );
                 })}
-            </GoogleMap>
+              </GoogleMap>
+            </Box>
           </Box>
         </Box>
-      </Box>
 
-      {/* Filter Dialog */}
-      <Dialog
-        open={openFilterDialog}
-        onClose={handleCloseFilterDialog}
-        fullWidth
-        maxWidth="sm"
-        PaperProps={{
-          style: {
-            backgroundColor: '#1e1e1e',
-            color: '#fff'
-          }
-        }}
-      >
-        <DialogTitle>Filters</DialogTitle>
-        <DialogContent>
-          <Box sx={{ mt: 2 }}>
-            {/* Price Filter */}
-            <Typography variant="body2" sx={{ mt: 2, mb: 1 }}>
-              Price Range (₹) : {priceRange[0]} - {priceRange[1]}
-            </Typography>
-            <MuiSlider
-              value={priceRange}
-              onChange={(e, newValue) => setPriceRange(newValue)}
-              valueLabelDisplay="auto"
-              min={1000}
-              max={20000}
-              step={500}
+        {/* Filter Dialog */}
+        <Dialog
+          open={openFilterDialog}
+          onClose={handleCloseFilterDialog}
+          fullWidth
+          maxWidth="sm"
+          PaperProps={{
+            style: {
+              backgroundColor: '#1e1e1e',
+              color: '#fff'
+            }
+          }}
+        >
+          <DialogTitle>Filters</DialogTitle>
+          <DialogContent>
+            <Box sx={{ mt: 2 }}>
+              {/* Price Filter */}
+              <Typography variant="body2" sx={{ mt: 2, mb: 1 }}>
+                Price Range (₹) : {priceRange[0]} - {priceRange[1]}
+              </Typography>
+              <MuiSlider
+                value={priceRange}
+                onChange={(e, newValue) => setPriceRange(newValue)}
+                valueLabelDisplay="auto"
+                min={1000}
+                max={20000}
+                step={500}
+                sx={{
+                  color: "#b91c1c",
+                  '& .MuiSlider-thumb': {
+                    borderColor: "#b91c1c",
+                  },
+                  '& .MuiSlider-track': {
+                    color: "#b91c1c",
+                  },
+                  '& .MuiSlider-rail': {
+                    color: "#b91c1c",
+                  }
+                }}
+              />
+
+              {/* City Dropdown */}
+              <FormControl fullWidth sx={{ mt: 3 }} size="small">
+                <InputLabel
+                  id="city-label"
+                  sx={{
+                    color: "#fff",
+                    "&.Mui-focused": { color: "#b91c1c" }
+                  }}
+                >
+                  City
+                </InputLabel>
+                <Select
+                  labelId="city-label"
+                  label="City"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  sx={{
+                    color: "#fff",
+                    ".MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#fff",
+                    },
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#b91c1c",
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#b91c1c",
+                    },
+                    ".MuiSvgIcon-root": { color: "#fff" }
+                  }}
+                >
+                  <MenuItem value="">All</MenuItem>
+                  <MenuItem value="Delhi">Delhi</MenuItem>
+                  <MenuItem value="Mumbai">Mumbai</MenuItem>
+                  <MenuItem value="fff">Fff</MenuItem>
+                </Select>
+              </FormControl>
+
+              {/* Bed Dropdown */}
+              <FormControl fullWidth sx={{ mt: 3 }} size="small">
+                <InputLabel
+                  id="bed-label"
+                  sx={{
+                    color: "#fff",
+                    "&.Mui-focused": { color: "#b91c1c" }
+                  }}
+                >
+                  Beds
+                </InputLabel>
+                <Select
+                  labelId="bed-label"
+                  label="Beds"
+                  value={bed}
+                  onChange={(e) => setBed(e.target.value)}
+                  sx={{
+                    color: "#fff",
+                    ".MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#fff",
+                    },
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#b91c1c",
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#b91c1c",
+                    },
+                    ".MuiSvgIcon-root": { color: "#fff" }
+                  }}
+                >
+                  <MenuItem value="">All</MenuItem>
+                  <MenuItem value="1">1</MenuItem>
+                  <MenuItem value="2">2</MenuItem>
+                  <MenuItem value="3">3</MenuItem>
+                  <MenuItem value="4">4</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleResetFilters}
               sx={{
-                color: "#b91c1c",
-                '& .MuiSlider-thumb': {
-                  borderColor: "#b91c1c",
-                },
-                '& .MuiSlider-track': {
-                  color: "#b91c1c",
-                },
-                '& .MuiSlider-rail': {
-                  color: "#b91c1c",
+                color: '#fff',
+                '&:hover': {
+                  color: '#b91c1c'
                 }
               }}
-            />
-
-            {/* City Dropdown */}
-            <FormControl fullWidth sx={{ mt: 3 }} size="small">
-              <InputLabel
-                id="city-label"
-                sx={{
-                  color: "#fff",
-                  "&.Mui-focused": { color: "#b91c1c" }
-                }}
-              >
-                City
-              </InputLabel>
-              <Select
-                labelId="city-label"
-                label="City"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                sx={{
-                  color: "#fff",
-                  ".MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#fff",
-                  },
-                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#b91c1c",
-                  },
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#b91c1c",
-                  },
-                  ".MuiSvgIcon-root": { color: "#fff" }
-                }}
-              >
-                <MenuItem value="">All</MenuItem>
-                <MenuItem value="Delhi">Delhi</MenuItem>
-                <MenuItem value="Mumbai">Mumbai</MenuItem>
-                <MenuItem value="fff">Fff</MenuItem>
-              </Select>
-            </FormControl>
-
-            {/* Bed Dropdown */}
-            <FormControl fullWidth sx={{ mt: 3 }} size="small">
-              <InputLabel
-                id="bed-label"
-                sx={{
-                  color: "#fff",
-                  "&.Mui-focused": { color: "#b91c1c" }
-                }}
-              >
-                Beds
-              </InputLabel>
-              <Select
-                labelId="bed-label"
-                label="Beds"
-                value={bed}
-                onChange={(e) => setBed(e.target.value)}
-                sx={{
-                  color: "#fff",
-                  ".MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#fff",
-                  },
-                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#b91c1c",
-                  },
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#b91c1c",
-                  },
-                  ".MuiSvgIcon-root": { color: "#fff" }
-                }}
-              >
-                <MenuItem value="">All</MenuItem>
-                <MenuItem value="1">1</MenuItem>
-                <MenuItem value="2">2</MenuItem>
-                <MenuItem value="3">3</MenuItem>
-                <MenuItem value="4">4</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={handleResetFilters}
-            sx={{
-              color: '#fff',
-              '&:hover': {
-                color: '#b91c1c'
-              }
-            }}
-          >
-            Reset
-          </Button>
-              <Button
-            onClick={() => {
-              handleApplyFilters();
-              handleCloseFilterDialog();
-            }}
-                variant="contained"
-            sx={{
-              backgroundColor: "#b91c1c",
-              '&:hover': {
-                backgroundColor: "#991b1b"
-              }
-            }}
-              >
-                Apply
-              </Button>
-        </DialogActions>
-      </Dialog>
+            >
+              Reset
+            </Button>
+            <Button
+              onClick={() => {
+                handleApplyFilters();
+                handleCloseFilterDialog();
+              }}
+              variant="contained"
+              sx={{
+                backgroundColor: "#b91c1c",
+                '&:hover': {
+                  backgroundColor: "#991b1b"
+                }
+              }}
+            >
+              Apply
+            </Button>
+          </DialogActions>
+        </Dialog>
 
       </Container>
     </div >

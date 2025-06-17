@@ -41,22 +41,35 @@ const Home = () => {
     getMyPropertyVilla();
   }, []);
 
-   const [reviews, setReviews] = useState([])
-    const getAllReviews = async () => {
-      const res = await axios.get(`${api}/Reviews/property/${propertiesByVilla[0]?.propertyId}`)
-      if (res?.data) {
-        setReviews(res?.data)
-      }
-    }
-  
-    const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
-    const avgRating = reviews.length ? totalRating / reviews.length : 0;
-    const roundedRating = Math.floor(avgRating);
+  const [reviewsByProperty, setReviewsByProperty] = useState({});
 
-    useEffect(()=>{
-      getAllReviews()
-      console.log(reviews)
-    },[])
+  const getAllReviews = async () => {
+    try {
+      const allReviews = await Promise.all(
+        propertiesByVilla.map(async (property) => {
+          const res = await axios.get(`${api}/Reviews/property/${property.propertyId}`);
+          return { propertyId: property.propertyId, reviews: res.data || [] };
+        })
+      );
+
+      const reviewMap = {};
+      allReviews.forEach(({ propertyId, reviews }) => {
+        reviewMap[propertyId] = reviews;
+      });
+
+      setReviewsByProperty(reviewMap);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (propertiesByVilla.length) {
+      getAllReviews();
+    }
+  }, [propertiesByVilla]);
+
+
   const NextArrow = (props) => {
     const { onClick } = props;
     return (
@@ -76,7 +89,7 @@ const Home = () => {
             opacity: 1,
             transform: "translateX(-20px)",
           },
-          "&:hover": { 
+          "&:hover": {
             backgroundColor: "transparent",
             "& .MuiSvgIcon-root": {
               transform: "scale(1.2)",
@@ -113,7 +126,7 @@ const Home = () => {
             opacity: 1,
             transform: "translateX(20px)",
           },
-          "&:hover": { 
+          "&:hover": {
             backgroundColor: "transparent",
             "& .MuiSvgIcon-root": {
               transform: "scale(1.2)",
@@ -156,7 +169,7 @@ const Home = () => {
         });
 
         if (res?.data?.message) {
-          toast.error(res?.data?.message); 
+          toast.error(res?.data?.message);
         } else {
           toast.success("Added to wishlist");
         }
@@ -223,92 +236,98 @@ const Home = () => {
       </Box>
 
       <Container sx={{ mt: 6 }}>
-        <Typography variant="h5" fontWeight="bold" gutterBottom>
-          Villa
-        </Typography>
+
         <Divider sx={{ mb: 3, background: "rgb(187 187 187)" }} />
 
         <Container sx={{ mt: 4, mb: 8 }}>
           <Grid container spacing={3} >
-            {propertiesByVilla?.filter(p => p?.status === 'active')?.map((p) => (
-              <Grid item xs={12} sm={6} md={4} lg={4} key={p?.id}>
-                <Card
-                  sx={{
-                    minWidth: 300,
-                    maxWidth: 300,
-                    borderRadius: 3,
-                    background: "#1e1e1e",
-                    color: "#fff",
-                    position: "relative",
-                    transition: "transform 0.2s ease-in-out",
-                    "&:hover": {
-                      transform: "translateY(-5px)",
-                    },
-                  }}
-                >
-                  <Box sx={{ position: "relative" }}>
-                    <Slider {...sliderSettings}>
-                      {p?.imagesNavigation?.map((img, index) => (
-                        <Box key={index}>
-                          <img
-                            src={img?.imageUrl}
-                            style={{
-                              width: "100%",
-                              height: 200,
-                              objectFit: "cover",
-                            }}
-                            alt={`property-${index}`}
-                          />
-                        </Box>
-                      ))}
-                    </Slider>
-                    <IconButton
-                      sx={{ position: "absolute", top: 8, right: 8 }}
-                      aria-label="add to favorites"
-                      onClick={() => handleWishlist(p?.propertyId)}
-                    >
-                      {wishlist?.some(item => item.propertyId === p?.propertyId) ? (
-                        <FavoriteIcon sx={{ color: 'red' }} />
-                      ) : (
-                        <FavoriteBorderIcon />
-                      )}
-                    </IconButton>
+            {propertiesByVilla?.filter(p => p?.status === 'active')?.map((p) => {
+              const propertyReviews = reviewsByProperty[p?.propertyId] || [];
+              const totalRating = propertyReviews.reduce((sum, r) => sum + r.rating, 0);
+              const avgRating = propertyReviews.length ? totalRating / propertyReviews.length : 0;
+              return (
 
-                  </Box>
+                <Grid item xs={12} sm={6} md={4} lg={4} key={p?.id}>
+                  <Card
+                    sx={{
+                      minWidth: 300,
+                      maxWidth: 300,
+                      borderRadius: 3,
+                      background: "#1e1e1e",
+                      color: "#fff",
+                      position: "relative",
+                      transition: "transform 0.2s ease-in-out",
+                      "&:hover": {
+                        transform: "translateY(-5px)",
+                      },
+                    }}
+                  >
+                    <Box sx={{ position: "relative" }}>
+                      <Slider {...sliderSettings}>
+                        {p?.imagesNavigation?.map((img, index) => (
+                          <Box key={index}>
+                            <img
+                              src={img?.imageUrl}
+                              style={{
+                                width: "100%",
+                                height: 200,
+                                objectFit: "cover",
+                              }}
+                              alt={`property-${index}`}
+                            />
+                          </Box>
+                        ))}
+                      </Slider>
+                      <IconButton
+                        sx={{ position: "absolute", top: 8, right: 8 }}
+                        aria-label="add to favorites"
+                        onClick={() => handleWishlist(p?.propertyId)}
+                      >
+                        {wishlist?.some(item => item.propertyId === p?.propertyId) ? (
+                          <FavoriteIcon sx={{ color: 'red' }} />
+                        ) : (
+                          <FavoriteBorderIcon />
+                        )}
+                      </IconButton>
 
-                  <CardContent>
-                    <Typography variant="body2" fontWeight="bold">
-                      Flat in {p?.propertyCity}
-                    </Typography>
+                    </Box>
 
-                    <Stack direction="row" alignItems="center" spacing={0.5}>
-                      <Rating
-                        name="read-only"
-                        value={4.25}
-                        precision={0.25}
-                        readOnly
-                        size="small"
-                      />
-                      <Typography variant="body2">(4)</Typography>
-                    </Stack>
+                    <CardContent>
+                      <Typography variant="body2" fontWeight="bold">
+                        {p?.category?.categoryName} in {p?.propertyCity}
+                      </Typography>
 
-                    <Typography variant="body2" color="rgb(187 187 187)">
-                      <Link to={`property/${p?.slugName}`}>{p?.propertyName}</Link>
-                    </Typography>
-                    <Typography variant="body2" color="rgb(187 187 187)">
-                      {p?.bed} beds · {p?.bedRoom} bedrooms
-                    </Typography>
+                      <Stack direction="row" alignItems="center" spacing={0.5}>
+                        <Rating
+                          name="read-only"
+                          value={parseFloat(avgRating.toFixed(2))}
+                          precision={0.25}
+                          readOnly
+                          size="small"
+                        />
+                        <Typography variant="body2">({propertyReviews?.length})</Typography>
+                      </Stack>
 
-                    <Typography variant="body2" sx={{ mt: 1 }}>
-                      <span style={{ fontWeight: "bold" }}>
-                        ₹{p?.propertyPrice}
-                      </span>{" "}
-                      per night
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
+
+                      <Typography variant="body2" color="rgb(187 187 187)">
+                        <Link to={`property/${p?.slugName}`}>{p?.propertyName}</Link>
+                      </Typography>
+                      <Typography variant="body2" color="rgb(187 187 187)">
+                        {p?.bed} beds · {p?.bedRoom} bedrooms
+                      </Typography>
+
+                      <Typography variant="body2" sx={{ mt: 1 }}>
+                        <span style={{ fontWeight: "bold" }}>
+                          ₹{p?.propertyPrice}
+                        </span>{" "}
+                        per night
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+              )
+            })}
           </Grid>
         </Container>
       </Container>
